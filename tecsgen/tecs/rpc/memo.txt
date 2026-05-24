@@ -1,0 +1,6 @@
+2つのセルタイプを削除
+
+tShmemHDChannel.cdl
+tShmemHDChannelBuf.c
+tDataqueueFDChannel.cdl
+tDataqueueFDChannel.c

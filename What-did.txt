@@ -1,0 +1,251 @@
+
+
+STM32CubeMX 生成のコンパイラコマンド
+$ make STM32H747_CM7.bin
+arm-none-eabi-gcc "C:/cygwin64/home/hiro2/STM32Cube/STM32H747_mx/STM32H747/Common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.c" 
+                -mcpu=cortex-m7 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32H747xx -DCORE_CM7 -DDEBUG 
+                -c -I../Core/Inc
+                 -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include 
+                 -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP 
+                 -MF"Common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.d" 
+                 -MT"Common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.o" 
+                 --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb 
+                 -o "Common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.o"
+
+nucleo_f401 をベースにしたコマンド
+arm-none-eabi-gcc -c -o objs/system_stm32h7xx_dualcore_boot_cm4_cm7.o
+                -MD -MP -MF objs/system_stm32h7xx_dualcore_boot_cm4_cm7.d
+                -O2 -Wall -g
+                -ffunction-sections -fdata-sections
+                -mthumb -mcpu=cortex-m7 -mfloat-abi=hard -mfpu=fpv5-d16
+                -DSTM32H747xx -DUSE_HAL_DRIVER -DCORE_CM7 -DUSE_TIM_AS_HRT
+                -DTOPPERS_CORTEX_M7 -D__TARGET_ARCH_THUMB=4 -D__TARGET_FPU_FPV5
+                -DTOPPERS_FPU_ENABLE -DTOPPERS_FPU_LAZYSTACKING -DTOPPERS_FPU_CONTEXT
+                -I. -I../include  -I../target/stm32h747_discovery_m7 -I../target/stm32h747_discovery_m7/stm32hcube -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/STM32H7xx_HAL_Driver/Inc -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Include -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../target/stm32h747_discovery_m7/stm32hcube/CM7/Core/Inc -I../syssvc -I../arch/arm_m_gcc/stm32h7xx_stm32cube -I../arch/arm_m_gcc/common -I../arch/gcc -I.. -I../sample -I./gen -I../tecs_kernel -DALLFUNC  -I../kernel ../target/stm32h747_discovery_m7/stm32hcube/Common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.c
+
+arm-none-eabi-gcc -c -o objs/time_event.o -MD -MP -MF objs/time_event.d -O2 -Wall -g    
+                -ffunction-sections -fdata-sections -mlittle-endian -nostartfiles 
+                -mthumb -mcpu=cortex-m7 -mfloat-abi=softfp -mfpu=fpv5-sp-d16  
+                -DSTM32H747xx -DCORE_CM7 -DUSE_TIM_AS_HRT 
+                -DTOPPERS_CORTEX_M7 -D__TARGET_ARCH_THUMB=4 -D__TARGET_FPU_FPV4_SP 
+                -DTOPPERS_FPU_ENABLE -DTOPPERS_FPU_LAZYSTACKING -DTOPPERS_FPU_CONTEXT  
+                -I. -I../include  -I../target/stm32h747_discovery_m7 -I../target/stm32h747_discovery_m7/stm32hcube -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/STM32H7xx_HAL_Driver/Inc -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Include -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../arch/arm_m_gcc/stm32h7xx_stm32cube -I../arch/arm_m_gcc/common -I../arch/gcc -I.. -I../sample -I./gen -I../tecs_kernel -DALLFUNC  -I../kernel 
+                ../kernel/time_event.c
+
+---- Cube
+             -mcpu=cortex-m7 -mthumb
+             --specs=nano.specs
+             -mfpu=fpv5-d16 -mfloat-abi=hard
+              
+            -DUSE_HAL_DRIVER -DSTM32H747xx -DCORE_CM7 -DDEBUG
+
+---- ASP
+            -mthumb -mcpu=cortex-m7
+            -mfloat-abi=softfp -mfpu=fpv5-sp-d16
+            -ffunction-sections -fdata-sections
+            -mlittle-endian -nostartfiles 
+
+            -DSTM32H747xx -DCORE_CM7 -DUSE_TIM_AS_HRT 
+                -DTOPPERS_CORTEX_M7 -D__TARGET_ARCH_THUMB=4 -D__TARGET_FPU_FPV4_SP 
+                -DTOPPERS_FPU_ENABLE -DTOPPERS_FPU_LAZYSTACKING -DTOPPERS_FPU_CONTEXT
+
+C:\cygwin64\home\hiro2\TECS\asp3\asp3_nucleo_f401re_gcc-20211228\target\stm32h747_discovery_m7\stm32hcube\CM7\Debug
+C:\cygwin64\home\hiro2\STM32Cube\STM32H747_mx\STM32H747\CM7\Debug
+
+
+
+arm-none-eabi-gcc -O2 -Wall -g    
+        -ffunction-sections -fdata-sections -mthumb -mcpu=cortex-m7 -mfloat-abi=hard -mfpu=fpv5-d16  
+        -DSTM32H747xx -DUSE_HAL_DRIVER -DCORE_CM7 -DUSE_TIM_AS_HRT -DTOPPERS_CORTEX_M7 -D__TARGET_ARCH_THUMB=4 -D__TARGET_FPU_FPV5 -DTOPPERS_FPU_ENABLE -DTOPPERS_FPU_LAZYSTACKING -DTOPPERS_FPU_CONTEXT  -I. -I../include  -I../target/stm32h747_discovery_m7 -I../target/stm32h747_discovery_m7/stm32hcube -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/STM32H7xx_HAL_Driver/Inc -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Include -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../target/stm32h747_discovery_m7/stm32hcube/CM7/Core/Inc -I../syssvc -I../arch/arm_m_gcc/stm32h7xx_stm32cube -I../arch/arm_m_gcc/common -I../arch/gcc -I.. -I../sample -I./gen -I../tecs_kernel -nostdlib  
+        -Wl,-M  -Wl,-T,../target/stm32h747_discovery_m7/stm32h747_m7.ld  
+        -Wl,--gc-sections -L. -o asp.elf \
+        objs/sample1.o objs/log_output.o objs/vasyslog.o objs/t_perror.o 
+        objs/strerror.o    objs/tTask_tecsgen.o objs/tSemaphore_tecsgen.o 
+        objs/tInterruptRequest_tecsgen.o objs/tISR_tecsgen.o 
+        objs/tInitializeRoutine_tecsgen.o objs/tTerminateRoutine_tecsgen.o 
+        objs/tSerialPortMain_tecsgen.o objs/tSerialAdapter_tecsgen.o 
+        objs/tSysLog_tecsgen.o objs/tSysLogAdapter_tecsgen.o 
+        objs/tLogTaskMain_tecsgen.o objs/tBannerMain_tecsgen.o 
+        objs/tPutLogTarget_tecsgen.o objs/tUsart_tecsgen.o 
+        objs/tSIOPortTargetMain_tecsgen.o objs/tTask.o objs/tISR.o 
+        objs/tInitializeRoutine.o objs/tTerminateRoutine.o 
+        objs/tSerialPortMain.o objs/tSerialAdapter.o 
+        objs/tSysLog.o objs/tSysLogAdapter.o objs/tLogTaskMain.o objs/tBannerMain.o 
+        objs/tPutLogTarget.o objs/tUsart.o objs/init_tecs.o  objs/kernel_cfg.o \
+        -lkernel -lc -lgcc  -lkernel -lc_nano             > asp.map
+
+
+arm-none-eabi-gcc -o "STM32H747_CM7.elf" @"objects.list" @"objects_asp3.list"   
+        -L ../../../../../obj_h747  -mcpu=cortex-m7 -T../STM32H747XIHX_FLASH.ld 
+        --specs=nosys.specs 
+        -Wl,-Map="STM32H747_CM7.map" -Wl,--gc-sections -static --specs=nano.specs 
+        -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group 
+        -lc -lm -Wl,--end-group -Wl,-M > STM32H747_CM7.map
+
+obj_h747 下ですべて
+コンパイラオプションを寄せてみる                    ×
+コンパイラのオプションマクロを合わせてみる          ×
+リンカオプションを寄せてみる                        ×
+リンカスクリプトを合わせる                          ×
+STM32Cube でコンパイルしたものをリンクしてみる      〇
+
+Cube
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 
+        -DUSE_HAL_DRIVER -DSTM32H747xx -DCORE_CM7 -DDEBUG -c 
+        -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../../../../../syssvc -I../../../../../include -I../../.. -I../../../../../arch/gcc -I../../../../../arch/arm_m_gcc/stm32h7xx_stm32cube -I../../../../../arch/arm_m_gcc/common 
+        -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" 
+        -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb 
+        -o "Core/Src/main.o"
+ASP
+arm-none-eabi-gcc -c -o objs/main.o -MD -MP -MF objs/main.d -O2 -Wall -g    
+        -mthumb -mcpu=cortex-m7 -mfloat-abi=hard -mfpu=fpv5-d16  
+        -DSTM32H747xx -DUSE_HAL_DRIVER -DCORE_CM7 -DUSE_TIM_AS_HRT 
+        -DTOPPERS_CORTEX_M7 -D__TARGET_ARCH_THUMB=4 -D__TARGET_FPU_FPV5 
+        -DTOPPERS_FPU_ENABLE -DTOPPERS_FPU_LAZYSTACKING -DTOPPERS_FPU_CONTEXT  
+        -I. -I../include  -I../target/stm32h747_discovery_m7 -I../target/stm32h747_discovery_m7/stm32hcube -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/STM32H7xx_HAL_Driver/Inc -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Include -I../target/stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../target/stm32h747_discovery_m7/stm32hcube/CM7/Core/Inc -I../syssvc -I../arch/arm_m_gcc/stm32h7xx_stm32cube -I../arch/arm_m_gcc/common -I../arch/gcc -I.. -I../sample -I./gen -I../tecs_kernel -DALLFUNC  -I../kernel 
+        ../target/stm32h747_discovery_m7/stm32hcube/CM7/Core/Src/main.c
+
+
+-O0  -ffunction-sections -fdata-sections --specs=nano.specs -fstack-usage -g3
+-DDEBUG
+
+
+
+exclude
+extension, *f401*, dummy*, simtimer, test, stm32f4*
+
+-------------------------
+
+STM32F401RE のターゲット依存部、arch をベースに移植する
+最低限必要なものは、以下のものである。
+ ・CPU、タイマー、シリアルのクロックの初期化
+ ・タイマー
+ ・シリアル
+
+デバッグに役立つ LED の設定
+    C:\Users\hiro2\Desktop\TECS-TOPPERS\TECS開発\STM32H747\STM32H747DiscoveryのLEDを点灯させるまで.pptx
+クロックの設定
+    C:\Users\hiro2\Desktop\TECS-TOPPERS\TECS開発\STM32H747\20220627_STM32H747Discoveryのクロック.pptx
+シリアル
+    stm32cube の生成コードは、割込みを使用していなかったので、割込みを使用する版をつくってみた
+    main.c の usart_xxx, sio_xxx を参照
+
+アセンブラ記述されている部分は、Cortex-M4 と M7 で共通のようなので、そのまま使用する方針。
+stm32cube の生成コードをベースに、タイマー、シリアルを実装するコードを生成する。
+
+いきなり target を完成させるのではなく、stm32cube の main.c で、クロック、タイマー、シリアルを動作させて、
+そこから sta_ker を呼出す方法で起動させる。
+
+シリアルは、f401 と、レジスタがかなり相違する。
+    tUsart.c のコードを書き換える。
+    オープン処理は、main.c で行ったものを引き継ぐこととして、空にした。
+    クローズは、しない。
+
+割込みベクターテーブルを整える。
+    まずは kerenel_cfg.c を一部書き換える方針とする。
+    f401 と h747 で割込み番号が同じなので、そこを入れ変える。
+    割込みハンドラの入り口を main.c に変更しておく
+   ★ cfg 実行都度書き換える必要がある
+
+カーネルを動作させてみる
+    pendsv_handler の出口で例外発生
+    sample1.c の cpu_exception へ飛んでくる
+    CFSR の bit 18 が ON ⇒ INVPC
+
+デバッグコードを入れる
+    sample1.c の cpu_exception に例外情報を出力するようにした。
+    ★ core_support.S に print_p_run をディスパッチ処理に入れ、いくらか情報を出すようにした。
+
+pendsv_handler が割込み処理の途中から開始されている模様
+    調査の過程で作成した資料。
+        C:\Users\hiro2\Desktop\TECS-TOPPERS\TECS開発\STM32H747\20220817_STM32H747Discoveryのカーネル起動.pptx
+    割込み優先度の設定に問題がありそう。
+    その観点で調べたところ core_initialize が呼び出されていないことが原因そう。
+    入れてみたところ、例外は発生しなくなった。
+    もう一つ例外発生条件が不明。
+    多重に発生した例外が終わっていない状態で、スレッドモードへ移行しようとしていることが
+    原因と推測するが、プロセッサがどのようにそれを判定しているか理解できていない。
+
+タイマー割込み target_timer.[ch] を変更
+    とりあえず、一定周期でタイマー割込みを入れてみる
+    ★ タイマーの再設定を空にする
+    これは Makefile.target で変更可能だったが、気づくのが遅れた
+
+タイマー時間を可変にする
+    target_hrt_set_event で割込み時間を変更するようにした。
+    signal_time で、予定が 5μ秒以上時間がずれていたら syslog を出力するようにした。
+    6μ秒ずれることが、たまに発生する。期待したようにタイマ割込みが入っていると判断した。
+
+基本的な移植は完了
+    機能としては移植作業完了。
+    移植を完了させるには main.c から移す作業が必要。
+    ★ここまでの成果： commit c0424260013ed562d806428e9c1272bb809029fb (HEAD -> main)
+
+main.c から不要コードを削除
+    もはや kernel_cfg.c のベクトルを書き換える必要はなくなった
+
+f401re との相違
+　・例外のスタックのアライメントが 8byte 固定 (f401 は4byte, 8byte 選択可能で f401のパッケージは 4byteを選択)
+　・タイマーは OnePulse モードで期待したように割込みが入らない
+
+obj_h747 でビルドできるように変更
+    ここまで stm32cube で生成された Makefile に libkernel.a などをリンクすることで動作確認してきた。
+    これを obj_h747 下でビルドできるように変更。
+    stm32cube 生成のコードを KERNEL_COBJS (Makefile.target) に追加してビルドしたところ、
+    LED が点いたがシリアルが出力されない。
+    この原因を調査したところ、とりあえずの結論としては、stm32cube 生成コードを libkernel.a に
+    含めてリンクすると出力されない。
+    直接 .o をリンクすると解決した。
+    最初は、原因がわからず、コンパイラオプション、リンカオプションを合わせるなど試行錯誤した。
+    libkernel.a 含めると期待した動作しない原因は、今後調査が必要。
+    直接参照されないがリンクする必要のあるモジュールがある（可能性低い）、
+    同じシンボルを持つ別モジュールが libkernel.a にあって、そちらが使われてしまうために、
+    シリアルが出ない（こちらの方が可能性あり）。引き続き調査する。
+
+    libkernel.a を調べたが重複シンボルはない（もしあれば ar か ranlib で警告されると思われる)。
+    ★★★★ まずは、追求をあきらめる 
+    comp.sh で別にコンパイルする
+
+CM4 の動作確認
+    0x1004000 RAM 領域をコア間通信用に用いることとする
+
+HSEM を使用してみる
+
+電源電圧設定を変更
+    400MHz、200MHz 動作するようになった
+
+再び文鎮化
+
+#if 0
+#if 1
+PRINT_P_RUN
+IGNORE_NO_TIME_EVENT_PROCESSED
+ALWAYS_LOG_EMERGE
+LED_SET_ON_SIGNAL_TIME
+CALC_CURRENT_EVTTIM
+
+
+★ 時間がかかった点 ★ 
+・クロックの設定
+   最大定格 480MHz に設定しようとしたが、できなくて色々トライ
+   380MHz 付近が最大だった。
+
+・タイマー設定
+   割込みを入れる (NVIC) の設定
+   OnePulse モードが期待したように入らない。
+   断念して、通常のカウンタモードを使用する方式に変更。
+
+・シリアル
+　 割込み対応。そんなには、はまっていない
+
+・ディスパッチャ
+   PendSV の割込み優先度の設定ができていなかった。
+   
+   設定できていなかったときは、恐らくすぐに割込みがはいっていた。
+   この結果、矛盾が検出されて例外が発していた。
+
+・割込みがはいらなくなった
+   ベクターテーブルをkernel_cfg.c に切り替えたのち、手で書き換えていたことを忘れた。
+   気づくのに2週間程度。
+
+・HSEM 

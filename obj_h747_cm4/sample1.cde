@@ -1,0 +1,1009 @@
+__tool_info__ ("tecsgen") {
+    "tecscde_version"     : "0.5.1.0",
+    "cde_format_version"  : "0.5.0.0",
+    "save_date"           : "2025-03-31T08:57:29+09:00",
+    "base_dir" : [
+        "C:/cygwin64/home/hiro2/TECS/asp3/asp3_stm32h747_discovery/obj_h747_cm4",
+        "C:/cygwin64/home/oyama/TECS/asp3/obj_tecs"
+    ],
+    "define_macro" : [
+
+    ],
+   "import_path" : [
+        ".",
+        "../include",
+        "../target/stm32h747_discovery_m4",
+        "../target/stm32h747_discovery_m4/../stm32h747_discovery_m7/stm32hcube/Drivers/STM32H7xx_HAL_Driver/Inc",
+        "../target/stm32h747_discovery_m4/../stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Include",
+        "../target/stm32h747_discovery_m4/../stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Device/ST/STM32H7xx/Include",
+        "../target/stm32h747_discovery_m4/../stm32h747_discovery_m7/stm32hcube/CM4/Core/Inc",
+        "../target/stm32h747_discovery_m4/../stm32h747_discovery_m7/stm32hcube",
+        "../syssvc_cm4",
+        "../kernel",
+        "../target/stm32h747_discovery_m4/../stm32h747_discovery_m7",
+        "../arch/arm_m_gcc/stm32h7xx_stm32cube",
+        "../arch/arm_m_gcc/common",
+        "../arch/gcc",
+        "..",
+        "../sample_cm4",
+        "./gen",
+        "../tecs_kernel",
+        "../target/ct11mpcore_gcc",
+        "../arch/arm_gcc/mpcore",
+        "../arch/arm_gcc/common",
+        "../sample"
+    ],
+    "direct_import" : [
+        "../sample_cm4/sample1.cdl"
+    ],
+    "cpp"    : "arm-none-eabi-gcc  -DSTM32H747xx -DUSE_HAL_DRIVER -DCORE_CM4 -DUSE_TIM_AS_HRT -DTOPPERS_CORTEX_M7 -D__TARGET_ARCH_THUMB=4 -D__TARGET_FPU_FPV5 -DTOPPERS_FPU_ENABLE -DTOPPERS_FPU_LAZYSTACKING -DTOPPERS_FPU_CONTEXT  -I. -I../include  -I../target/stm32h747_discovery_m4 -I../target/stm32h747_discovery_m4/../stm32h747_discovery_m7/stm32hcube/Drivers/STM32H7xx_HAL_Driver/Inc -I../target/stm32h747_discovery_m4/../stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Include -I../target/stm32h747_discovery_m4/../stm32h747_discovery_m7/stm32hcube/Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../target/stm32h747_discovery_m4/../stm32h747_discovery_m7/stm32hcube/CM4/Core/Inc -I../target/stm32h747_discovery_m4/../stm32h747_discovery_m7/stm32hcube -I../syssvc_cm4 -I../kernel -I../target/stm32h747_discovery_m4/../stm32h747_discovery_m7 -I../arch/arm_m_gcc/stm32h7xx_stm32cube -I../arch/arm_m_gcc/common -I../arch/gcc -I.. -I../sample_cm4 -I./gen -I../tecs_kernel -D TECSGEN -E"
+}
+
+
+/*************************************************
+ *         TOOL INFORMATION FOR TECSCDE          *
+ *     This  information is used by tecscde      *
+ *  please don't touch if you are not familiar   *
+ ************************************************/
+__tool_info__ ("tecscde") {
+    "paper" : {
+       "type" : "paper",
+       "size" :  "A3",
+       "orientation" :  "LANDSCAPE"
+    },
+    "cell_list" : [
+        {       /** cell_list[ 0 ] **/
+            "type"     : "cell_location",
+            "name"     : "HSEMBody",
+            "location" : [ 222.0, 111.0, 25.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cCallback",
+                    "subscript" : 0,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 4.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cCallback",
+                    "subscript" : 1,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 8
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cCallback",
+                    "subscript" : 2,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 12
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cCallback",
+                    "subscript" : 3,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 16
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eMain",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 20.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eHSEM",
+                    "subscript" : 0,
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 5.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eHSEM",
+                    "subscript" : 1,
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 12
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eHSEM",
+                    "subscript" : 2,
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 16
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eHSEM",
+                    "subscript" : 3,
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 20
+                }
+            ]
+        },
+        {       /** cell_list[ 1 ] **/
+            "type"     : "cell_location",
+            "name"     : "HSEM_ISR",
+            "location" : [ 306.0, 58.0, 25.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "ciISRBody",
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 4.0
+                }
+            ]
+        },
+        {       /** cell_list[ 2 ] **/
+            "type"     : "cell_location",
+            "name"     : "HSEM_IRQ",
+            "location" : [ 335.0, 115.0, 26.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eInterruptRequest",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 4.0
+                }
+            ]
+        },
+        {       /** cell_list[ 3 ] **/
+            "type"     : "cell_location",
+            "name"     : "IPISender4to7",
+            "location" : [ 188.0, 26.0, 32.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cHSEM",
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 3.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cHSEMGiantLock",
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 10.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eIPISend",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 4.0
+                }
+            ]
+        },
+        {       /** cell_list[ 4 ] **/
+            "type"     : "cell_location",
+            "name"     : "IPIReceiver7to4",
+            "location" : [ 205.0, 170.0, 136.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 0,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 4.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 1,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 8.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 2,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 12.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 3,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 16.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 4,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 20.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 5,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 24.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 6,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 28.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 7,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 32.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 8,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 36.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 9,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 40.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 10,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 44.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 11,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 48.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 12,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 52.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 13,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 56.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 14,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 60.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 15,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 64.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 16,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 68.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 17,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 72.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 18,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 76.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 19,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 80.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 20,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 84.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 21,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 88.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 22,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 92.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 23,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 96.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 24,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 100.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 25,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 104.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 26,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 108.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 27,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 112.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 28,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 116.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 29,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 120.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 30,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 124.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPIMain",
+                    "subscript" : 31,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 128.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cHSEMGiantLock",
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 132.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eCallback",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 4.0
+                }
+            ]
+        },
+        {       /** cell_list[ 5 ] **/
+            "type"     : "cell_location",
+            "name"     : "IPI_7to4_experimental",
+            "location" : [ 187.0, 225.0, 33.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eIPIMain",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 4
+                }
+            ]
+        },
+        {       /** cell_list[ 6 ] **/
+            "type"     : "cell_location",
+            "name"     : "SIOPortTarget1",
+            "location" : [ 86.0, 148.0, 37.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "ciSIOCBR",
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 21.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eSIOPort",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 20.0
+                }
+            ]
+        },
+        {       /** cell_list[ 7 ] **/
+            "type"     : "cell_location",
+            "name"     : "PutLogTarget",
+            "location" : [ 72.0, 105.0, 30.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cSIOPort",
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 4.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "ePutLog",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 10.0
+                }
+            ]
+        },
+        {       /** cell_list[ 8 ] **/
+            "type"     : "cell_location",
+            "name"     : "SysLogAdapter",
+            "location" : [ 20.0, 22.0, 28.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cSysLog",
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 8.0
+                }
+            ]
+        },
+        {       /** cell_list[ 9 ] **/
+            "type"     : "cell_location",
+            "name"     : "SerialAdapter",
+            "location" : [ 142.0, 22.0, 26.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cSerialPort",
+                    "subscript" : 0,
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 13.0
+                }
+            ]
+        },
+        {       /** cell_list[ 10 ] **/
+            "type"     : "cell_location",
+            "name"     : "SysLog",
+            "location" : [ 49.0, 62.0, 30.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cPutLog",
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 15.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cIPISend",
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 8.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eSysLog",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 16.0
+                }
+            ]
+        },
+        {       /** cell_list[ 11 ] **/
+            "type"     : "cell_location",
+            "name"     : "SerialPort1",
+            "location" : [ 119.0, 105.0, 30.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cSIOPort",
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 15.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eSerialPort",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 18.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "enSerialPortManage",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 12.0
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eiSIOCBR",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 24.0
+                }
+            ]
+        },
+        {       /** cell_list[ 12 ] **/
+            "type"     : "cell_location",
+            "name"     : "Banner",
+            "location" : [ 64.0, 22.0, 25.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+
+            ]
+        },
+        {       /** cell_list[ 13 ] **/
+            "type"     : "cell_location",
+            "name"     : "HSEM3Handler",
+            "location" : [ 271.0, 114.0, 25.0, 15.0 ],
+            "region"   : "::",
+            "port_location" : [
+                {
+                    "type"      : "port_location",
+                    "port_name" : "cHSEM",
+                    "edge"      : "EDGE_BOTTOM",
+                    "offset"    : 4
+                },
+                {
+                    "type"      : "port_location",
+                    "port_name" : "eCallback",
+                    "edge"      : "EDGE_TOP",
+                    "offset"    : 4
+                }
+            ]
+        }
+    ],
+    "join_list" : [
+        {       /** join_list[ 0 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "HSEMBody",
+            "call_region" : "::",
+            "call_port"   : "cCallback",
+            "call_port_subscript" : 1,
+            "entry_cell"  : "IPIReceiver7to4",
+            "entry_region": "::",
+            "entry_port"  : "eCallback",
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 147.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 230.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 156.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 209.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 170.0
+                }
+            ]
+        },
+        {       /** join_list[ 1 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "HSEMBody",
+            "call_region" : "::",
+            "call_port"   : "cCallback",
+            "call_port_subscript" : 3,
+            "entry_cell"  : "HSEM3Handler",
+            "entry_region": "::",
+            "entry_port"  : "eCallback",
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 144.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 254.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 101.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 275.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 114.0
+                }
+            ]
+        },
+        {       /** join_list[ 2 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "HSEM_ISR",
+            "call_region" : "::",
+            "call_port"   : "ciISRBody",
+            "entry_cell"  : "HSEMBody",
+            "entry_region": "::",
+            "entry_port"  : "eMain",
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 92.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 269.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 92.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 242.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 111.0
+                }
+            ]
+        },
+        {       /** join_list[ 3 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "IPISender4to7",
+            "call_region" : "::",
+            "call_port"   : "cHSEM",
+            "entry_cell"  : "HSEMBody",
+            "entry_region": "::",
+            "entry_port"  : "eHSEM",
+            "entry_port_subscript" : 0,
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 91.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 201.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 91.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 227.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 111.0
+                }
+            ]
+        },
+        {       /** join_list[ 4 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "IPISender4to7",
+            "call_region" : "::",
+            "call_port"   : "cHSEMGiantLock",
+            "entry_cell"  : "HSEMBody",
+            "entry_region": "::",
+            "entry_port"  : "eHSEM",
+            "entry_port_subscript" : 2,
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 67.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 221.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 49.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 238.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 111.0
+                }
+            ]
+        },
+        {       /** join_list[ 5 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "IPIReceiver7to4",
+            "call_region" : "::",
+            "call_port"   : "cHSEMGiantLock",
+            "entry_cell"  : "HSEMBody",
+            "entry_region": "::",
+            "entry_port"  : "eHSEM",
+            "entry_port_subscript" : 2,
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 216.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 374.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 49.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 238.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 111.0
+                }
+            ]
+        },
+        {       /** join_list[ 6 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "IPIReceiver7to4",
+            "call_region" : "::",
+            "call_port"   : "cIPIMain",
+            "call_port_subscript" : 0,
+            "entry_cell"  : "IPI_7to4_experimental",
+            "entry_region": "::",
+            "entry_port"  : "eIPIMain",
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 195.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 210.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 215.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 191.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 225.0
+                }
+            ]
+        },
+        {       /** join_list[ 7 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "SIOPortTarget1",
+            "call_region" : "::",
+            "call_port"   : "ciSIOCBR",
+            "entry_cell"  : "SerialPort1",
+            "entry_region": "::",
+            "entry_port"  : "eiSIOCBR",
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 173.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 163.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 88.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 143.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 105.0
+                }
+            ]
+        },
+        {       /** join_list[ 8 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "PutLogTarget",
+            "call_region" : "::",
+            "call_port"   : "cSIOPort",
+            "entry_cell"  : "SIOPortTarget1",
+            "entry_region": "::",
+            "entry_port"  : "eSIOPort",
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 133.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 81.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 133.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 106.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 148.0
+                }
+            ]
+        },
+        {       /** join_list[ 9 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "SysLogAdapter",
+            "call_region" : "::",
+            "call_port"   : "cSysLog",
+            "entry_cell"  : "SysLog",
+            "entry_region": "::",
+            "entry_port"  : "eSysLog",
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 47.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 28.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 49.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 65.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 62.0
+                }
+            ]
+        },
+        {       /** join_list[ 10 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "SerialAdapter",
+            "call_region" : "::",
+            "call_port"   : "cSerialPort",
+            "call_port_subscript" : 0,
+            "entry_cell"  : "SerialPort1",
+            "entry_region": "::",
+            "entry_port"  : "eSerialPort",
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 59.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 142.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 59.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 137.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 105.0
+                }
+            ]
+        },
+        {       /** join_list[ 11 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "SysLog",
+            "call_region" : "::",
+            "call_port"   : "cPutLog",
+            "entry_cell"  : "PutLogTarget",
+            "entry_region": "::",
+            "entry_port"  : "ePutLog",
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 83.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 66.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 83.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 82.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 105.0
+                }
+            ]
+        },
+        {       /** join_list[ 12 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "SysLog",
+            "call_region" : "::",
+            "call_port"   : "cIPISend",
+            "entry_cell"  : "IPISender4to7",
+            "entry_region": "::",
+            "entry_port"  : "eIPISend",
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 195.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 178.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 6.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 192.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 26.0
+                }
+            ]
+        },
+        {       /** join_list[ 13 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "SerialPort1",
+            "call_region" : "::",
+            "call_port"   : "cSIOPort",
+            "entry_cell"  : "SIOPortTarget1",
+            "entry_region": "::",
+            "entry_port"  : "eSIOPort",
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 133.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 130.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 133.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 106.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 148.0
+                }
+            ]
+        },
+        {       /** join_list[ 14 ] **/
+            "type"        : "join_location",
+            "call_cell"   : "HSEM3Handler",
+            "call_region" : "::",
+            "call_port"   : "cHSEM",
+            "entry_cell"  : "HSEMBody",
+            "entry_region": "::",
+            "entry_port"  : "eHSEM",
+            "entry_port_subscript" : 3,
+            "bar_list"    : [
+                {
+                     "type"     : "VBar",
+                     "position" : 139.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 312.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 92.0
+                },                {
+                     "type"     : "HBar",
+                     "position" : 242.0
+                },                {
+                     "type"     : "VBar",
+                     "position" : 111.0
+                }
+            ]
+        }
+    ]
+}

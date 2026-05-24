@@ -1,0 +1,33 @@
+signature sEntryDescriptorInfo {
+    // 通常これは使わない。マクロを使用すること   GetEntryDescriptor( callName, signatureName, pp_descr )
+    ER   getEntryRawDescriptor_use_GetEntryDescriptor_macro_instead_of_this(
+                     [in,string ]char_t *signatureName, [out]void **rawDesc );
+    ER   getEntryInfo( [out]Descriptor( sEntryInfo ) *entryInfoDesc );
+};
+
+celltype tEntyrDescriptorInfo {
+    attr {
+        void *desc;
+    }
+    entry sEntryDescriptorInfo eEntryDescriptorInfo;
+    [ref_dynamic]
+        call sEntryInfo cEntryInfo;
+};
+
+#define GetDescriptor( sSignature, desc )                               \
+    ((Descriptor(sSignature))(cEntryDescriptorInfo( ##sSignature )))
+
+-----------------------
+signature sEntryDescriptorInfo {
+    // 通常これは使わない。マクロを使用すること   GetEntryDescriptor( callName, entryName, signatureGlobalName, pp_Descriptor )
+    ER   getEntryRawDescriptor_use_GetEntryDescriptor_macro_instead_of_this(
+                     [in,string ]char_t *signatureName, [out]void **rawDesc );
+              // セル、セルタイプ、受け口を選択しておくこと
+};
+
+si
+
+celltype tEntryEntyrDescriptorInfo {
+   
+};
+

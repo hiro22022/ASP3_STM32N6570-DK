@@ -1,0 +1,47 @@
+/*
+ * RawSpinLock
+ *   Spin Lock 変数の獲得、開放を行う．
+ *   この外部で loc_cpu しないと、優先度逆転が起こりうる．
+ *
+ *   この実装では ARM Cortex-M4, M7 等の LDREX, STREX 命令を使用して実現する．
+ */
+signature sRawSpinLock {
+    void   lock( void );
+    bool_t tryLock( void );
+    void   unlock( void );
+};
+
+celltype tRawSpinLock {
+    [inline]
+        entry sRawSpinLock eRawSpinLock;
+    attr {
+        volatile uint32_t  *pLockVar;         /* 共有メモリ上のアドレス */
+    };
+
+    /*
+     * TECS 外コードから呼出すためのマクロを FACTORY, factory で生成する．
+     * C 言語ソースコードで以下のように include 文を書く．
+     *  #include "tRawSpinLock_factory.h"
+     *
+     * 関数の呼出しは、以下のように行う．
+     *  <セル名>_lock();        ロックの取得(取れるまで待つ)
+     *  <セル名>_trylock();     ロックの取得を試す(取れなくても、すぐに戻る) 
+     *  <セル名>_unlock();      ロックを開放する
+     */
+    FACTORY {
+        /* ヘッダを取り込む */
+        write( "$ct$_factory.h", "\n/* include celltype definition header */" );
+        write( "$ct$_factory.h", "#define TOPPERS_CB_TYPE_ONLY" );
+        write( "$ct$_factory.h", "#include \"$ct_global$_tecsgen.h\"" );
+        write( "$ct$_factory.h", "#undef TOPPERS_CB_TYPE_ONLY" );
+        write( "$ct$_factory.h", "/**/\n" );
+    };
+    factory {
+        /* C 言語から直接呼び出せるようにする */
+        write( "$ct$_factory.h", "/* cell: $cell$ */" );
+        write( "$ct$_factory.h", "#define $cell$_lock()      $ct_global$_eRawSpinLock_lock( $idx$ )" );
+        write( "$ct$_factory.h", "#define $cell$_trylock()   $ct_global$_eRawSpinLock_tryLock( $idx$ )" );
+        write( "$ct$_factory.h", "#define $cell$_unlock()    $ct_global$_eRawSpinLock_unlock( $idx$ )" );
+        write( "$ct$_factory.h", "/**/\n" );
+    };
+};
