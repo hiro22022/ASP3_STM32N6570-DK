@@ -1,0 +1,15 @@
+/*
+ *  サンプルプログラム(N657最小)のコンポーネント記述ファイル
+ */
+import(<kernel.cdl>);
+
+/*
+ *  ターゲット依存部の取り込み
+ */
+import("target.cdl");
+
+/*
+ *  カーネル API セル（TECS ランタイム用）
+ */
+cell tKernel ASPKernel {
+};

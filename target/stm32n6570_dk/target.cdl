@@ -1,0 +1,14 @@
+/*
+ *  TOPPERS/ASP Kernel - STM32N6570-DK ターゲット依存部
+ */
+
+/*
+ *  タスクのスタックサイズのデフォルト
+ */
+const size_t DefaultTaskStackSize = 4096;
+
+/*
+ *  カーネル起動メッセージに関する定義
+ */
+const char *const BannerTargetName = "STM32N6570-DK (ARM Cortex-M55)";
+const char *const BannerCopyrightNotice = "";
