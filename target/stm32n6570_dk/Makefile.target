@@ -41,6 +41,7 @@ LDFLAGS := -nostdlib --specs=nosys.specs \
 
 TARGET_COBJS = target_kernel_impl.o target_kernel_impl2.o \
 				system_stm32n6xx_ns.o secure_nsc_stub.o \
+				led_btn_joy.o \
 				main_kernel.o stm32n6xx_hal_msp.o stm32n6xx_it.o \
 				syscalls.o sysmem.o \
 				stm32n6xx_hal.o stm32n6xx_hal_cortex.o \

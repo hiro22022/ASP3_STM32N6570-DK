@@ -1,8 +1,10 @@
 /* LED, BUTTON, JOYSTICK */
 
 /* LED */
+void led_init(void);
 void led_on( uint32_t no );
 void led_off( uint32_t no );
+void led_toggle( uint32_t no );
 void led_set( int val );
 void led_blink( int i, int j );
 void led_blink_btn( int i, int j );     /* ボタンが押されるのを待つ */
