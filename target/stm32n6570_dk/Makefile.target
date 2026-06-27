@@ -31,7 +31,7 @@ INCLUDES := $(INCLUDES) -I$(TARGETDIR) -I$(TARGETDIR)/stm32hcube \
 	-I$(TARGETDIR)/stm32hcube/AppliNonSecure/Core/Inc \
 	-I$(TARGETDIR)/stm32hcube/Secure_nsclib \
 	-I../syssvc -I../kernel
-CDEFS := $(CDEFS) -DSTM32N657xx -DUSE_HAL_DRIVER -Dfloat_t=float
+CDEFS := $(CDEFS) -DSTM32N657xx -DUSE_HAL_DRIVER
 COPTS := $(COPTS)
 LDFLAGS := -nostdlib --specs=nosys.specs \
 		-static \

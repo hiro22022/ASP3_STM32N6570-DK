@@ -2,7 +2,8 @@
  *  TOPPERS/ASP 起動用 main（STM32N6570-DK）
  */
 #include "main.h"
-#include "kernel.h"
+
+extern void sta_ker(void);
 
 int b_sta_ker;
 
