@@ -352,7 +352,7 @@ endif
 #
 #  tecsgenからCプリプロセッサを呼び出す際のオプションの定義
 #
-TECS_CPP = $(CC) $(CDEFS) $(INCLUDES) -D TECSGEN -E
+TECS_CPP = $(CC) $(COPTS) $(CDEFS) $(INCLUDES) -D TECSGEN -E
 
 #
 #  tecsgenの呼出し
