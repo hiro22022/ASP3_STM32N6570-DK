@@ -148,7 +148,7 @@ eLogTaskBody_main(void)
  *  システムログタスクの終了処理（受け口関数）
  */
 void
-eLogTaskTerminate_main(intptr_t exinf)
+eLogTaskTerminate_main(void)
 {
 	char	c;
 	SYSLOG	syslog;

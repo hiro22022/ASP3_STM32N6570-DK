@@ -63,7 +63,7 @@ static const char banner[] = "\n"
  *  カーネル起動メッセージの出力（受け口関数）
  */
 void
-eBannerInitialize_main(intptr_t exinf)
+eBannerInitialize_main(void)
 {
 	syslog_5(LOG_NOTICE, banner,
 				(TKERNEL_PRVER >> 12) & 0x0fU,
