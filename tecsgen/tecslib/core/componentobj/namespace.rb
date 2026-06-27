@@ -59,7 +59,7 @@ class Namespace < NSBDNode
 # @const_decl_list:: Decl[]
 # @cache_n_cells:: Integer :  get_n_cells の結果をキャッシュする
 # @cache_generating_region:: Region :  get_n_cells の結果をキャッシュするしているリージョン
-
+# @NamespacePath:: NamespacePath: NamespacePath クラスのオブジェクト
   # mikan namespace の push, pop
 
   # namespace 階層用のスタック
@@ -645,6 +645,13 @@ class Namespace < NSBDNode
     @namespace_list
   end
   
+  #== Namespace # NamespacePath(クラスのインスタンス) を返す
+  # NamespacePath クラスのインスタンスを返す (文字列などではなく)
+  #
+  def get_NamespacePath
+    @NamespacePath
+  end
+
   def show_tree( indent )
     indent.times { print "  " }
     puts "#{self.class}: name: #{@name} path: #{get_namespace_path.get_path_str}"

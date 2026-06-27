@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
+#! /bin/sh
 #
 #  TECS Generator
 #      Generator for TOPPERS Embedded Component System
 #  
-#   Copyright (C) 2008-2014 by TOPPERS Project
-#--
+#   Copyright (C) 2008-2013 by TOPPERS Project
+#
 #   上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
 #   ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 #   変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
@@ -34,47 +34,10 @@
 #   アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
 #   の責任を負わない．
 #  
-#   $Id: CelltypePlugin.rb 3263 2022-12-30 11:45:37Z okuma-top $
-#++
+#   $Id: tecsgen 2027 2014-01-20 08:36:17Z okuma-top $
 
-#== celltype プラグインの共通の親クラス
-# セルタイププラグインを実装する場合の親クラス
-# このクラスの親クラスで定義されている各メソッドも呼び出される、または呼び出せる
-class CelltypePlugin < Plugin
+#ruby -w $TECSPATH/../tecsgen/tecsgen.rb "$@"
+tcflow.rb "$@"
+exit $?
 
-  #celltype::     Celltype        セルタイプ（インスタンス）
-  def initialize( celltype, option )
-    super()
-    @celltype = celltype
-    # @plugin_arg_str = option.gsub( /\A"(.*)/, '\1' )    # 前後の "" を取り除く
-    # @plugin_arg_str.sub!( /(.*)"\z/, '\1' )
-    @plugin_arg_str = CDLString.remove_dquote option
-    @plugin_arg_list = {}
-  end
-
-  #=== 新しいセル
-  #cell::        Cell            セル
-  #
-  # celltype プラグインを指定されたセルタイプのセルが生成された
-  # セルタイププラグインに対する新しいセルの報告
-  def new_cell( cell )
-  end
-
-  #=== 後ろの CDL コードを生成
-  #プラグインの後ろの CDL コードを生成
-  #file:: File: 
-  def self.gen_post_code( file )
-    # 複数のプラグインの post_code が一つのファイルに含まれるため、以下のような見出しをつけること
-    # file.print "/* '#{self.class.name}' post code */\n"
-  end
-
-  #------ コード生成段階で呼び出されるメソッド --------#
-
-  #=== tCelltype_factory.h に挿入するコードを生成する
-  # file 以外の他のファイルにファクトリコードを生成してもよい
-  # セルタイププラグインが指定されたセルタイプのみ呼び出される
-  def gen_factory file
-  end
-
-end
-
+# 直接 tecsgen.rb を呼出すケースがありうるため、このスクリプトで処理を行うべきでない

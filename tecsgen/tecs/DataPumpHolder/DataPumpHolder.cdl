@@ -1,0 +1,39 @@
+import( <rpc.cdl> );
+import( <kernel.cdl> );
+
+/*
+ * DataPump セルタイプを駆動するためのシグニチャ
+ */
+signature sPumpMain {
+    ER  Main( void );
+};
+
+/*
+ * kernel.cdl で定義される sTaskBody を sPumpMain に変換するセルタイプ
+ */
+celltype tPumpMainConverter {
+    [inline]
+    entry sTaskBody eTaskBody;
+    call  sPumpMain cMain;
+};
+
+/*
+ * DataHolder 状態
+ *  optional の cFlag を結合していない場合、常に読み出し可能な状態
+ *  DATAHOLDER_STAT_WRITING:       Publisher 書込み中
+ *  DATAHOLDER_STAT_WRITE_DONE:    Publisher 書込み完了
+ *  DATAHOLDER_STAT_READING:       Subscriber 読出し中
+ *  DATAHOLDER_STAT_READ_DONE:     Subscriber 読出し完了
+ */
+const int8_t  DATAHOLDER_STAT_NONE            = 0;
+const int8_t  DATAHOLDER_STAT_WRITING         = 1;      // ePubSide.waitForReadDone 完了時
+const int8_t  DATAHOLDER_STAT_WRITE_DONE      = 2;      // ePubSide.newDataReady 呼出し時
+const int8_t  DATAHOLDER_STAT_READING         = 3;      // eSubSide.waitForNewData  完了時
+const int8_t  DATAHOLDER_STAT_READ_DONE       = 4;      // eSubSide.readDone  呼び出し時
+
+/*
+ * DataHolder Eventflag 値
+ */
+const FLGPTN DATAHOLDER_EVFLAG_NEW_DATA      = 0x01;  // bit 0
+const FLGPTN DATAHOLDER_EVFLAG_READ_DONE     = 0x02;  // bit 1
+

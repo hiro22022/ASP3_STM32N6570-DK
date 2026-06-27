@@ -1479,69 +1479,7 @@ class Celltype
 
     if @n_entry_port_inline > 0 then
       ifdef_cb_type_only f
-      f.printf TECSMsg.get( :UDF_comment ), "#_UDF_#"
-      f.print "#undef VALID_IDX\n"
-      f.print "#undef GET_CELLCB\n"
-      f.print "#undef CELLCB\n"
-      f.print "#undef CELLIDX\n"
-      f.print "#undef #{@name}_IDX\n"
-
-      f.print "#undef FOREACH_CELL\n"
-      f.print "#undef END_FOREACH_CELL\n"
-      f.print "#undef INITIALIZE_CB\n"
-      f.print "#undef SET_CB_INIB_POINTER\n"
-
-      @attribute.each { |a|
-        f.print( "#undef ATTR_#{a.get_name}\n" )
-        f.print( "#undef #{@global_name}_ATTR_#{a.get_name}\n" )
-        f.print( "#undef #{@global_name}_GET_#{a.get_name}\n" )
-      }
-      @var.each { |v|
-        f.print( "#undef VAR_#{v.get_name}\n" )
-        f.print( "#undef VAR_#{v.get_name}\n" )
-        f.print( "#undef #{@global_name}_VAR_#{v.get_name}\n" )
-        f.print( "#undef #{@global_name}_GET_#{v.get_name}\n" )
-        f.print( "#undef #{@global_name}_SET_#{v.get_name}\n" )
-      }
-      @port.each { |p|
-        next if p.get_port_type != :CALL
-
-        # is_...joined は omit するケースでも出力されるため、omit を検査する前に出力
-        if p.is_optional? then
-          f.print( "#undef is_#{p.get_name}_joined\n" )
-        end
-
-        next if p.is_omit?
-
-        p.get_signature.get_function_head_array.each{ |fun|
-          f.print( "#undef #{@global_name}_#{p.get_name}_#{fun.get_name}\n" )
-          if ! p.is_require? || p.has_name? then
-            f.print( "#undef #{p.get_name}_#{fun.get_name}\n" )
-          else
-            f.print( "#undef #{fun.get_name}\n" )
-          end
-        }
-        if p.is_dynamic? then
-          f.print( "#undef #{p.get_name}_set_descriptor\n" )
-          if p.is_optional? then
-            f.print( "#undef #{p.get_name}_unjoin\n" )
-          end
-        elsif p.is_ref_desc? then
-          f.print( "#undef #{p.get_name}_refer_to_descriptor\n" )
-          f.print( "#undef #{p.get_name}_ref_desc\n" )
-        end
-      }
-      @port.each { |p|
-        next if p.get_port_type != :ENTRY
-        next if p.is_omit?
-        p.get_signature.get_function_head_array.each{ |fun|
-          f.print( "#undef #{p.get_name}_#{fun.get_name}\n" )
-        }
-      }
-
-      gen_ph_dealloc_code( f, "", true )
-      gen_ph_dealloc_code( f, "_RESET", true )
-
+      gen_ph_undef f
       endif_cb_type_only f
     end
 
@@ -3244,7 +3182,75 @@ EOT
       f.print( "#include \"#{@global_name}_inline.#{$h_suffix}\"\n\n" )
     end
   end
+  
+  def gen_ph_undef f
+    f.printf TECSMsg.get( :UDF_comment ), "#_UDF_#"
+    f.print "#undef VALID_IDX\n"
+    f.print "#undef GET_CELLCB\n"
+    f.print "#undef CELLCB\n"
+    f.print "#undef CELLIDX\n"
+    f.print "#undef #{@name}_IDX\n"
 
+    f.print "#undef FOREACH_CELL\n"
+    f.print "#undef END_FOREACH_CELL\n"
+    f.print "#undef INITIALIZE_CB\n"
+    f.print "#undef SET_CB_INIB_POINTER\n"
+
+    @attribute.each { |a|
+      f.print( "#undef ATTR_#{a.get_name}\n" )
+      f.print( "#undef #{@global_name}_ATTR_#{a.get_name}\n" )
+      f.print( "#undef #{@global_name}_GET_#{a.get_name}\n" )
+    }
+    @var.each { |v|
+      f.print( "#undef VAR_#{v.get_name}\n" )
+      f.print( "#undef VAR_#{v.get_name}\n" )
+      f.print( "#undef #{@global_name}_VAR_#{v.get_name}\n" )
+      f.print( "#undef #{@global_name}_GET_#{v.get_name}\n" )
+      f.print( "#undef #{@global_name}_SET_#{v.get_name}\n" )
+    }
+    @port.each { |p|
+      next if p.get_port_type != :CALL
+
+      # is_...joined は omit するケースでも出力されるため、omit を検査する前に出力
+      if p.is_optional? then
+        f.print( "#undef is_#{p.get_name}_joined\n" )
+      end
+
+      next if p.is_omit?
+
+      p.get_signature.get_function_head_array.each{ |fun|
+        f.print( "#undef #{@global_name}_#{p.get_name}_#{fun.get_name}\n" )
+        if ! p.is_require? || p.has_name? then
+          f.print( "#undef #{p.get_name}_#{fun.get_name}\n" )
+        else
+          f.print( "#undef #{fun.get_name}\n" )
+        end
+      }
+      if p.is_dynamic? then
+        f.print( "#undef #{p.get_name}_set_descriptor\n" )
+        if p.is_optional? then
+          f.print( "#undef #{p.get_name}_unjoin\n" )
+        end
+      elsif p.is_ref_desc? then
+        f.print( "#undef #{p.get_name}_refer_to_descriptor\n" )
+        f.print( "#undef #{p.get_name}_ref_desc\n" )
+      end
+    }
+    @port.each { |p|
+      next if p.get_port_type != :ENTRY
+      next if p.is_omit?
+      p.get_signature.get_function_head_array.each{ |fun|
+        f.print( "#undef #{p.get_name}_#{fun.get_name}\n" )
+      }
+      if p.get_array_size then
+        f.print( "#undef NEP_#{p.get_name}\n" )
+      end
+    }
+
+    gen_ph_dealloc_code( f, "", true )
+    gen_ph_dealloc_code( f, "_RESET", true )
+  end
+  
   def gen_ph_endif( f, post = "TECSGEN" )
     f.print("#endif /* #{@global_name}_#{post}H */\n")
   end

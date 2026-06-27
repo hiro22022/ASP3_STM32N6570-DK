@@ -3,7 +3,7 @@
 #  TECS Generator
 #      Generator for TOPPERS Embedded Component System
 #  
-#   Copyright (C) 2008-2014 by TOPPERS Project
+#   Copyright (C) 2008-2023 by TOPPERS Project
 #--
 #   上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
 #   ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -39,6 +39,7 @@
 
 #== celltype プラグインの共通の親クラス
 class CppIfGenCelltypePlugin < CelltypePlugin
+    CLASS_NAME_SUFFIX = ""
     @@b_signature_header_generated = false
 
     #celltype::     Celltype        セルタイプ（インスタンス）
@@ -74,15 +75,17 @@ class CppIfGenCelltypePlugin < CelltypePlugin
     # セルタイププラグインが指定されたセルタイプのみ呼び出される
     def gen_factory file
         if ! @celltype.is_singleton? then
-            idx_def = "#{@celltype.get_global_name}_IDX idx_"
-            idx_ini = ":idx( idx_ )"
-            idx = "idx"
+            idx_def = "CPP_#{@celltype.get_global_name}_IDX idx_"
+            idx_ini = ":cpp_idx( idx_ )"
+            cpp_idx = "cpp_idx"
+            idx2 = "cpp_idx.idx"
             idx_ = "idx_"
             delim_ini = ", "
         else
             idx_def = ""
             idx_ini = ""
-            idx = ""
+            cpp_idx = ""
+            idx2 = ""
             idx_ = ""
             delim_ini = ""
         end
@@ -99,13 +102,26 @@ class CppIfGenCelltypePlugin < CelltypePlugin
 #ifndef #{@celltype.get_global_name.upcase}_CPPIF_HPP
 #define #{@celltype.get_global_name.upcase}_CPPIF_HPP
 
+/*
+ * This file is intended to be included in non-TECS celltype code and in C++ code.
+ */
+EOT
+
+dummy = <<EOT
+
+#if 0   ///////// MACROs are undef later /////////
 #ifndef TOPPERS_CB_TYPE_ONLY
 #define TOPPERS_CB_TYPE_ONLY
 #define TOPPERS_CB_TYPE_ONLY_defined_#{@celltype.get_global_name}_CIF_H
 #endif
+#endif /* 0 */
+EOT
 
+    file.print <<EOT
 #include "#{@celltype.get_global_name}_tecsgen.h"
+EOT
 
+dummy = <<EOT
 #ifdef TOPPERS_CB_TYPE_ONLY_defined_#{@celltype.get_global_name}_CIF_H
 #undef TOPPERS_CB_TYPE_ONLY
 #undef TOPPERS_CB_TYPE_ONLY_defined_#{@celltype.get_global_name}_CIF_H
@@ -129,6 +145,13 @@ EOT
             # シングルトンの場合 IDX は不要
             file.print <<EOT
 /*
+ * Cell IDX type for Cpp
+ */
+typedef struct  {
+    #{@celltype.get_global_name}_IDX idx;
+} CPP_#{@celltype.get_global_name}_IDX;
+
+/*
  * Cell IDX macros in celltype '#{@celltype.get_name}'
  *   type of the macro value is #{@celltype.get_name}_IDX.
  *   macro name is (cell name) + "_IDX"
@@ -142,8 +165,14 @@ EOT
                     else
                         idx_real = ""
                     end
-                    str = "#define #{cell.get_global_name}_IDX  #{idx_real}"
-                    file.printf( "%-45s/* cell: #{cell.get_name} */\n", str )
+                    file.print <<EOT
+inline CPP_#{@celltype.get_global_name}_IDX CPP_#{cell.get_global_name}_IDX__()
+{
+    CPP_#{@celltype.get_global_name}_IDX cpp_idx = { #{idx_real} };
+    return cpp_idx;
+}
+#define #{cell.get_global_name}_IDX  CPP_#{cell.get_global_name}_IDX__()
+EOT
                 end
             }
         end
@@ -200,18 +229,22 @@ EOT
 
         @celltype.get_port_list.each{ |port|
             if port.get_port_type == :ENTRY then
-                if port.get_array_size != nil then
-                    ea = "_EA"    # entry port array
-                else
-                    ea = ""
-                end
                 sig = port.get_signature
+                if port.get_array_size then
+                    subsc_def = "int_t subscript_"
+                    subsc_ini = "subscript(subscript_)"
+                    delim = delim_ini
+                else
+                    subsc_def = ""
+                    subsc_ini = ""
+                    delim = ""
+                end
                 file.print <<EOT
     /* class for entry #{sig.get_global_name} #{port.get_name} */
-    class #{port.get_name}_ : public #{sig.get_global_name}#{ea}{
+    class #{port.get_name}_ : public #{sig.get_global_name}{
         public : 
         /* constructor: internal use only */
-        #{port.get_name}_(#{idx_def});
+        #{port.get_name}_(#{idx_def}#{delim}#{subsc_def});
         /* destructor */
         // ~#{port.get_name}_();   unnecessary
     
@@ -232,7 +265,34 @@ EOT
                 if ! @celltype.is_singleton? then
                     file.print <<EOT
         private:
-        #{@celltype.get_global_name}_IDX idx;
+        CPP_#{@celltype.get_global_name}_IDX cpp_idx;
+EOT
+                end
+                # entry port array 
+                if port.get_array_size then
+                    file.print <<EOT
+        private:
+        int_t  subscript;
+EOT
+                end
+                file.print "    };\n"
+            end
+            # entry port array 
+            if port.get_array_size then
+                file.print <<EOT
+    class #{port.get_name}_EA{
+        public : 
+        /* constructor: internal use only */
+        #{port.get_name}_EA(#{idx_def});
+        /* destructor */
+        // ~#{port.get_name}_();   unnecessary
+
+        #{port.get_name}_ operator[]( int_t subscript ) const; 
+EOT
+                if ! @celltype.is_singleton? then
+                    file.print <<EOT
+        private:
+        CPP_#{@celltype.get_global_name}_IDX cpp_idx;
 EOT
                 end
                 file.print "    };\n"
@@ -250,9 +310,14 @@ EOT
 
 EOT
         @celltype.get_port_list.each{ |port|
+            if port.get_array_size then
+                entry_array = "EA"
+            else
+                entry_array = ""
+            end
             file.print <<EOT
     /* entry #{port.get_signature.get_global_name} #{port.get_name} */
-    #{port.get_name}_ #{port.get_name}; 
+    #{port.get_name}_#{entry_array} #{port.get_name}; 
 EOT
         }
         file.print <<EOT
@@ -265,8 +330,7 @@ EOT
 /*-------------- begin: implementation (I/F code only) ----------------*/
 /* constructor  */
 EOT
-
-        file.print "inline    #{@celltype.get_global_name}::#{@celltype.get_global_name}(#{idx_def} ) : "
+        file.print "inline    #{@celltype.get_global_name}::#{@celltype.get_global_name}(#{idx_def}) : "
         delim = ""
         @celltype.get_port_list.each{ |port|
             if port.get_port_type == :ENTRY then
@@ -277,29 +341,33 @@ EOT
         file.print "{}\n\n"
 
         @celltype.get_port_list.each{ |port|
+            if port.get_array_size then
+                subsc_def = "int_t subscript_"
+                subsc_ini = "subscript(subscript_)"
+                if idx_ini == "" then
+                    subsc_ini = ":" + subsc_ini
+                end
+                delim = delim_ini
+            else
+                subsc_def = ""
+                subsc_ini = ""
+                delim = ""
+            end
             file.print <<EOT
+/* ------------- entry port: #{port.get_name} ------------------*/
 /* constructor: internal use only */
-inline    #{@celltype.get_global_name}::#{port.get_name}_::#{port.get_name}_( #{idx_def} ) #{idx_ini}{}
+inline    #{@celltype.get_global_name}::#{port.get_name}_::#{port.get_name}_( #{idx_def}#{delim}#{subsc_def} ) #{idx_ini}#{delim}#{subsc_ini}{}
 
 /* entry #{port.get_name} functions */
 EOT
-            if port.get_array_size != nil then
-                subsc = "subscript"
-                subsc_type = "int_t "
-                delim_subsc = ", "
-            else
-                subsc = ""
-                subsc_type = ""
-                delim_subsc = ""
-            end
             port.get_signature.get_function_head_array.each{ |fh|
                 if "#{@celltype.get_global_name}::#{port.get_name}_::#{fh.get_name}".length >= 32 then
                     cr ="\n"
                 else
                     cr = ""
                 end
-                file.print "inline #{fh.get_return_type.get_type_str} #{@celltype.get_global_name}::#{port.get_name}_::#{fh.get_name}( #{subsc_type}#{subsc}"
-                delim = delim_subsc
+                file.print "inline #{fh.get_return_type.get_type_str} #{@celltype.get_global_name}::#{port.get_name}_::#{fh.get_name}( "
+                delim = ""
                 fh.get_paramlist.get_items.each{ |param|
                     file.print "#{delim}#{param.get_type.get_type_str} #{param.get_name}#{param.get_type.get_type_str_post}"
                     delim = ", "
@@ -309,8 +377,9 @@ EOT
                     file.print "return "
                 end
                 delim = delim_ini
-                file.print "#{@celltype.get_global_name}_#{port.get_name}_#{fh.get_name}( #{idx}#{delim_ini}#{subsc}"
-                if delim != "" || delim_subsc != "" then
+                file.print "#{@celltype.get_global_name}_#{port.get_name}_#{fh.get_name}( #{idx2}"
+                if port.get_array_size then
+                    file.print "#{delim}subscript"
                     delim = ", "
                 end
                 fh.get_paramlist.get_items.each{ |param|
@@ -319,12 +388,30 @@ EOT
                 }
                 file.print " ); }\n#{cr}"
             }
+            if port.get_array_size then
+                file.print <<EOT
+/* constructor for entry array (internal use only)*/
+inline  #{@celltype.get_global_name}::#{port.get_name}_EA::#{port.get_name}_EA( #{idx_def} )#{idx_ini}{}
+/* operator[] */
+inline  #{@celltype.get_global_name}::#{port.get_name}_ #{@celltype.get_global_name}::#{port.get_name}_EA::operator[]( int_t subscript ) const
+{
+    /*
+     * subscript is not checked here. No way to return error.
+     */
+    return #{@celltype.get_global_name}::#{port.get_name}_(#{cpp_idx}#{delim_ini}subscript);
+};
+
+EOT
+            end
         }
+        # undef macros
+        @celltype.gen_ph_undef file
         file.print <<EOT
 /*-------------- end: implementation (I/F code only) ----------------*/
 
 #endif /* #{@celltype.get_global_name.upcase}_CPPIF_HPP */
 EOT
+
         file.close
     end
 
@@ -334,14 +421,14 @@ EOT
             file.print <<EOT
 #ifndef #{sig.get_global_name.upcase}_CPPIF_HPP
 #define #{sig.get_global_name.upcase}_CPPIF_HPP
-
 /*
  * C++ interface code
- *   This class comes from signature '#{sig.get_name}'.
+ *   This class comes from signature '#{sig.get_name}#{CLASS_NAME_SUFFIX}'.
  *   All functions are pure virtual. These are defined in celltype class.
  */
  
- class #{sig.get_global_name}_EA {
+ /* */
+ class #{sig.get_global_name}#{CLASS_NAME_SUFFIX} {
     public:
 EOT
 
@@ -359,7 +446,6 @@ EOT
 };
 
 #endif /* #{sig.get_global_name.upcase}_CPPIF_HPP */
-
 EOT
             file.close
         }

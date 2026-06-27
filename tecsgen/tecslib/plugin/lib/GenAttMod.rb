@@ -238,8 +238,8 @@ return #{ct.get_name}_#{func_head.get_name}(idx, par1, par2, par3, par4, par5, c
 }
 EOT
       }
+      file2.close
     }
-    file2.close
 
     val = "TFN_TECSGEN_ORIGIN"
     offset = 0

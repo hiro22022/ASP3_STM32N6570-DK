@@ -693,13 +693,13 @@ class Expression < Node
     case elements[0]
     when :IDENTIFIER
       nsp = elements[1]
-      if nsp.is_name_only? && namedList then
+      if nsp.is_name_only? && namedList then    #1202
         paramdecl = namedList.get_item( nsp.get_name )
       else
         paramdecl = nil
       end
       unless paramdecl then
-        if namedList then
+        if namedList then                       #1202
           cdl_error( "E1012 $1: not found in parameter list" , nsp.get_path_str )
         else
           # namedList = nil: expression.rb の initializer.get_type( attribute ) から呼ばれた場合

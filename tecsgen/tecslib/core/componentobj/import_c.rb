@@ -34,7 +34,7 @@
 #   アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
 #   の責任を負わない．
 #  
-#   $Id: import_c.rb 3266 2023-01-03 07:32:40Z okuma-top $
+#   $Id: import_c.rb 3269 2023-07-26 00:02:52Z okuma-top $
 #++
 
 class Import_C < Node

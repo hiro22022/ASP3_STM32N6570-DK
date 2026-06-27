@@ -78,3 +78,5 @@ obj_n657/objs/*
 
 build_cmake_n657/gen_test/*
 
+obj_n657/kernel_cfg.c
+obj_n657/kernel_cfg.h

@@ -346,6 +346,8 @@ class Celltype < NSBDNode # < Nestable
     }
   end
 
+  #=== Celltype# 属性 (attr) のリストを得る
+  #  得られた attribute_list および、その中身は参照するだけで、書き換えないこと
   def get_attribute_list
     @attribute
   end
@@ -413,6 +415,8 @@ class Celltype < NSBDNode # < Nestable
     }
   end
 
+  #=== Celltype# 変数 (var) のリストを得る
+  #  得られた var_list および、その中身は参照するだけで、書き換えないこと
   def get_var_list
     @var
   end

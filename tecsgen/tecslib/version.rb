@@ -1,2 +1,2 @@
 $package = "tecsgen"
-$version = "1.9.0Beta4"
+$version = "1.9.1"

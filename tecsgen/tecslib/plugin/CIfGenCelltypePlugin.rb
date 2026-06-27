@@ -78,6 +78,12 @@ class CIfGenCelltypePlugin < CelltypePlugin
 #ifndef #{@celltype.get_global_name.to_s.upcase}_H
 #define #{@celltype.get_global_name.to_s.upcase}_H
 
+/*
+ * This header file is intedned to be included in non-TECS celltype code.
+ * Don not include in celltype code.
+ * Mutiple *_cif.h files can be included non-TECS celltype code.
+ */
+
 /* include celltype definition header */
 #ifndef TOPPERS_CB_TYPE_ONLY
 #define TOPPERS_CB_TYPE_ONLY

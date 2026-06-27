@@ -338,6 +338,22 @@ type_specifier
 	      { set_no_type_name true; result = CVoidType.new }  # void が宣言されたとする
         | enum_specifier
 	      { set_no_type_name true; result = CVoidType.new }  # void が宣言されたとする
+        | TYPEOF {
+            token = next_token
+            if token && token[1].val == '(' then
+              depth = 1
+              while depth > 0
+                token = next_token
+                break if token.nil?
+                case token[1].val
+                when '(' then depth += 1
+                when ')' then depth -= 1
+                end
+              end
+            end
+            set_no_type_name true
+            result = CVoidType.new
+          }
         | TYPE_NAME
 	      { set_no_type_name true; result = CDefinedType.new( val[0].val ) }
 
@@ -774,6 +790,8 @@ end
     'struct' => :STRUCT,
     'union' => :UNION,
     'sizeof' => :SIZEOF,
+    '__typeof__' => :TYPEOF,
+    'typeof'     => :TYPEOF,
     'throw' => :THROW,
 
     # specifier

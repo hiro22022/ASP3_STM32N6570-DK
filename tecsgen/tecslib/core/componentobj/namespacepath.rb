@@ -229,6 +229,23 @@ class NamespacePath < Node
     return nsp
   end
 
+  #=== NamespacePath# CDL に出力する際の定義用のパスを出力する
+  #return:: Integer: インデントレベル
+  def print_cdl_decl_path_pre( file )
+    (0..(@path.length-1)).each{ |i|
+      file.print "  " * i
+      file.print "namespace #{@path[i]}{\n"
+    }
+  end
+
+  def print_cdl_decl_path_post( file )
+    len = @path.length - 1
+    (0..len).each{ |i|
+      file.print "  " * (len - i)
+      file.print "}\n"
+    }
+    file.print "\n"
+  end
 end
 
 # 以下単体テストコード
