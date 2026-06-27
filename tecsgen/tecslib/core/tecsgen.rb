@@ -105,6 +105,75 @@ class TECSGEN
   #=== tecsgen のデフォルトを設定
   def self.set_default_config
     Makefile::set_default_config
+    CMake::set_default_config
+  end
+
+  ###
+  #== CMakeLists.tecsgen.cmake の出力内容を追加、変更するための操作
+  module CMake
+    @@sources = []
+    @@includes = []
+    @@defines = []
+    @@link_options = []
+    @@custom_commands = []
+    @@lines = []
+
+    def self.add_source(src)
+      @@sources << src.to_s
+    end
+
+    def self.add_include(path)
+      @@includes << path.to_s
+    end
+
+    def self.add_define(define)
+      @@defines << define.to_s
+    end
+
+    def self.add_link_option(opt)
+      @@link_options << opt.to_s
+    end
+
+    def self.add_custom_command(cmd)
+      @@custom_commands << cmd.to_s
+    end
+
+    def self.add_line(line)
+      @@lines << line.to_s
+    end
+
+    def self.get_sources
+      @@sources.uniq
+    end
+
+    def self.get_includes
+      @@includes.uniq
+    end
+
+    def self.get_defines
+      @@defines.uniq
+    end
+
+    def self.get_link_options
+      @@link_options.uniq
+    end
+
+    def self.get_custom_commands
+      @@custom_commands.uniq
+    end
+
+    def self.get_lines
+      @@lines.uniq
+    end
+
+    def self.set_default_config
+      @@sources = []
+      @@includes = []
+      @@defines = []
+      @@link_options = []
+      @@custom_commands = []
+      @@lines = []
+    end
   end
 
   ###

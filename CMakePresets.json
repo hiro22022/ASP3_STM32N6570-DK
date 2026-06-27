@@ -1,0 +1,22 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "stm32n6570-dk",
+            "displayName": "STM32N6570-DK (arm-none-eabi)",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build_cmake_n657",
+            "toolchainFile": "${sourceDir}/cmake/toolchain-arm-none-eabi.cmake",
+            "cacheVariables": {
+                "ASP3_TARGET": "stm32n6570_dk",
+                "ASP3_APPL_NAME": "sample1_n657"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "stm32n6570-dk",
+            "configurePreset": "stm32n6570-dk"
+        }
+    ]
+}

@@ -133,6 +133,7 @@ class Namespace
 
         gen_makefile_template
         gen_makefile_tecsgen
+        gen_cmake_tecsgen
         if $generating_region.get_n_cells == 0 then
           dbgPrint "only makefile_template #{@name}\n"
           return
@@ -312,13 +313,14 @@ EOT
 
   end
 
-  #=== Makefile.tecsgen, Makefile.templ の出力
+  #=== Makefile.tecsgen, Makefile.templ, CMakeLists.tecsgen.cmake の出力
   # 全セルタイプ名を出力する部分を出力
   #    （本メソッドは root namespace に対して呼出す）
   #     個々のセルタイプのメークルールは Celltype クラスで出力
   def gen_makefile
     gen_makefile_template
     gen_makefile_tecsgen
+    gen_cmake_tecsgen
   end
 
   def gen_makefile_template
@@ -848,6 +850,168 @@ EOT
       f.print( "# CELLTYPE_SRCS terminator\n\n" )
     f.close
 
+  end
+
+  def cmake_normalize_path(path)
+    path = path.to_s.strip.gsub(/\s*\\\s*$/, '')
+    if TECSGEN.is_absolute_path? path then
+      TECSGEN.subst_tecspath(path).tr('\\', '/')
+    else
+      path.gsub('$(GEN_DIR)/', '${TECS_GEN_DIR}/')
+          .gsub('$(GEN_DIR)', '${TECS_GEN_DIR}')
+          .strip
+    end
+  end
+
+  def cmake_write_list(f, varname, items)
+    f.print "set(#{varname}\n"
+    items.uniq.each { |item|
+      f.print "    \"#{cmake_normalize_path(item)}\"\n"
+    }
+    f.print ")\n\n"
+  end
+
+  def collect_celltype_names(result, prepend, append, b_plugin, b_inline_only_or_proc = true)
+    @celltype_list.each { |ct|
+      next if ! ct.need_generate?
+      next if b_inline_only_or_proc == false && ct.is_all_entry_inline? && ! ct.is_active?
+      next if b_inline_only_or_proc.kind_of?( Proc ) && ( b_inline_only_or_proc.call( ct ) == false )
+      if ( b_plugin && ct.get_plugin ) || ( ! b_plugin && ! ct.get_plugin ) then
+        result << "#{prepend}#{ct.get_global_name}#{append}"
+      end
+    }
+    @namespace_list.each { |ns|
+      ns.collect_celltype_names(result, prepend, append, b_plugin, b_inline_only_or_proc)
+    }
+  end
+
+  def collect_celltype_names_domain(result, prepend, append, domain_type, region, b_plugin, b_inline_only = true)
+    @celltype_list.each { |ct|
+      next if ! ct.need_generate?
+      next if b_inline_only == false && ct.is_all_entry_inline? && ! ct.is_active?
+      if ( b_plugin && ct.get_plugin ) || ( ! b_plugin && ! ct.get_plugin ) then
+        regions = ct.get_domain_class_roots2.keys
+        rdr = region
+        if regions.include?( rdr ) then
+          if rdr.is_root? then
+            nsp = ""
+          else
+            nsp = "_#{region.get_namespace_path.get_global_name}"
+          end
+          result << "#{prepend}#{ct.get_global_name}#{nsp}#{append}"
+        elsif rdr.is_link_root? then
+          if regions.length > 1 then
+            result << "#{prepend}#{ct.get_global_name}#{rdr.get_up_global_name}#{append}"
+          end
+        end
+      end
+    }
+    @namespace_list.each { |ns|
+      ns.collect_celltype_names_domain(result, prepend, append, domain_type, region, b_plugin, b_inline_only)
+    }
+  end
+
+  def collect_celltype_names_domain2(result, prepend, append, domain_type, region, b_plugin, b_inline_only = true)
+    @celltype_list.each { |ct|
+      next if ! ct.need_generate?
+      next if b_inline_only == false && ct.is_all_entry_inline? && ! ct.is_active?
+      if ( b_plugin && ct.get_plugin ) || ( ! b_plugin && ! ct.get_plugin ) then
+        regions = ct.get_domain_class_roots2
+        rdr = region
+        if regions.include?( rdr ) && regions.length == 1 then
+          result << "#{prepend}#{ct.get_global_name}#{append}"
+        elsif rdr.is_link_root? then
+          if regions.length > 1 then
+            result << "#{prepend}#{ct.get_global_name}#{rdr.get_up_global_name}#{append}"
+          end
+        end
+      end
+    }
+    @namespace_list.each { |ns|
+      ns.collect_celltype_names_domain2(result, prepend, append, domain_type, region, b_plugin, b_inline_only)
+    }
+  end
+
+  def gen_cmake_tecsgen
+    f = AppFile.open( "#{$gen}/CMakeLists.tecsgen.cmake" )
+
+    f.print <<EOT
+# generated automatically by tecsgen.
+# included by cmake/Asp3Tecs.cmake (TECS_GEN_DIR must be set).
+
+EOT
+
+    tecsgen_srcs = []
+    plugin_tecsgen_srcs = []
+    plugin_celltype_srcs = []
+    celltype_srcs = []
+
+    domain_regions = Celltype.get_domain_class_roots_total.keys
+    if domain_regions == nil then
+      domain_regions = [ $generating_region ]
+    end
+    domain_type = nil
+
+    domain_regions.each { |r|
+      collect_celltype_names_domain(tecsgen_srcs, "$(GEN_DIR)/", "_tecsgen.#{$c_suffix}", domain_type, r, false)
+      collect_celltype_names_domain(plugin_tecsgen_srcs, "$(GEN_DIR)/", "_tecsgen.#{$c_suffix}", domain_type, r, true)
+      collect_celltype_names_domain2(plugin_celltype_srcs, "", ".#{$c_suffix}", domain_type, r, true, false)
+      collect_celltype_names_domain2(celltype_srcs, "", ".#{$c_suffix}", domain_type, r, false, false)
+    }
+
+    import_cdls = []
+    Import.get_list.each { |cdl_expand_path, import|
+      path = import.get_cdl_path
+      if TECSGEN.is_absolute_path? path then
+        path = TECSGEN.subst_tecspath path
+      end
+      import_cdls << path
+    }
+
+    search_path = $import_path + TECSGEN::Makefile.get_search_path
+    include_dirs = search_path.map { |path|
+      if TECSGEN.is_absolute_path? path then
+        cmake_normalize_path(TECSGEN.subst_tecspath(path))
+      elsif path == "." then
+        "${ASP3_SRCDIR}"
+      else
+        cmake_normalize_path("$(BASE_DIR)/#{path}").gsub('$(BASE_DIR)', '${ASP3_SRCDIR}')
+      end
+    }
+    include_dirs << "${TECS_GEN_DIR}"
+    include_dirs += TECSGEN::CMake.get_includes.map { |p| cmake_normalize_path(p) }
+
+    plugin_sources = TECSGEN::CMake.get_sources
+
+    cmake_write_list(f, "TECS_IMPORT_CDLS", import_cdls)
+    cmake_write_list(f, "TECS_TECSGEN_SOURCES", tecsgen_srcs)
+    cmake_write_list(f, "TECS_PLUGIN_TECSGEN_SOURCES", plugin_tecsgen_srcs)
+    cmake_write_list(f, "TECS_PLUGIN_CELLTYPE_SOURCES", plugin_celltype_srcs)
+    cmake_write_list(f, "TECS_CELLTYPE_SOURCES", celltype_srcs)
+    cmake_write_list(f, "TECS_PLUGIN_EXTRA_SOURCES", plugin_sources)
+    cmake_write_list(f, "TECS_INCLUDE_DIRS", include_dirs.uniq)
+
+    defines = $define.map { |d| d.to_s } + TECSGEN::CMake.get_defines
+    cmake_write_list(f, "TECS_COMPILE_DEFINITIONS", defines.uniq)
+
+    link_options = TECSGEN::CMake.get_link_options
+    if link_options.length > 0 then
+      cmake_write_list(f, "TECS_LINK_OPTIONS", link_options)
+    end
+
+    custom_commands = TECSGEN::CMake.get_custom_commands
+    if custom_commands.length > 0 then
+      cmake_write_list(f, "TECS_CUSTOM_COMMANDS", custom_commands)
+    end
+
+    lines = TECSGEN::CMake.get_lines
+    if lines.length > 0 then
+      f.print "# plugin additional cmake lines\n"
+      lines.each { |line| f.print line, "\n" }
+      f.print "\n"
+    end
+
+    f.close
   end
 
   #=== すべてのセルタイプの名前を出力
