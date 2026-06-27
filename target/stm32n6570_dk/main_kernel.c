@@ -22,6 +22,7 @@ int main(void)
 {
 	HAL_Init();
 	PeriphCommonClock_Config();
+	SystemCoreClockUpdate();
 
 	__enable_fault_irq();
 	b_sta_ker = 1;

@@ -31,4 +31,28 @@ continue
 info reg
 backtrace
  ```
- 
+
+### LED 点滅周期の確認（タイマ修正後）
+
+`dly_tsk` の RELTIM は **マイクロ秒**（0.5秒 = `500000`）。SysTick 周期は `CPU_CLOCK_HZ`（600MHz）と `TSTEP_HRTCNT`（1000）で 1ms/割込み。
+
+```
+continue
+# sta_ker 通過後
+print/x SysTick->LOAD          # 期待: 0x927c0 (600000)
+print SystemCoreClock          # 期待: 600000000
+print/x SCB->VTOR              # _kernel_vector_table アドレス
+
+break target_hrt_handler
+continue
+# 数回停止して hrtcnt_current が 1000 ずつ増えることを確認
+
+delete breakpoints
+break main_task
+continue
+# n657_main_count が約 1 秒ごとに 2 増える（0.5秒 dly × 2）ことを確認
+watch n657_main_count
+continue
+```
+
+実機目視: LD1（緑）が **約 1Hz**（0.5秒 ON / 0.5秒 OFF）で点滅すれば OK。

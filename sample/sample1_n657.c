@@ -7,13 +7,17 @@
 volatile unsigned int n657_task1_count;
 volatile unsigned int n657_main_count;
 
+/* dly_tsk の RELTIM はマイクロ秒単位（500000 = 0.5秒） */
+#define DLY_1MS		1000U
+#define DLY_500MS	500000U
+
 void
 task1(intptr_t exinf)
 {
 	(void)exinf;
 	for (;;) {
 		n657_task1_count++;
-		(void)dly_tsk(1000);
+		(void)dly_tsk(DLY_1MS);
 	}
 }
 
@@ -25,6 +29,6 @@ main_task(intptr_t exinf)
 	for (;;) {
 		n657_main_count++;
 		led_toggle(0);		/* LD1 (green) */
-		(void)dly_tsk(500);
+		(void)dly_tsk(DLY_500MS);
 	}
 }
