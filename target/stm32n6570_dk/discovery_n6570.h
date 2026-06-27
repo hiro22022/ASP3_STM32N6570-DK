@@ -27,4 +27,16 @@
 #include "stm32n657xx.h"
 #endif /* TOPPERS_MACRO_ONLY */
 
+/*
+ *  USART関連の定義（ST-Link VCP: USART1 PE5/PE6, 115200）
+ */
+#define USART_INTNO (USART1_IRQn + 16)
+#define USART_NAME  USART1
+#define USART_BASE  USART1_BASE
+
+/*
+ *  ボーレート
+ */
+#define BPS_SETTING  (115200)
+
 #endif /* TOPPERS_DISCOVERY_N6570_H */

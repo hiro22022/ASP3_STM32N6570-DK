@@ -67,6 +67,8 @@ void led_init(void);
 
 #include <sil.h>
 
+extern void tPutLogTarget_initialize(void);
+
 /*
  *  起動直後の初期化(system_stm32f4xx.c)
  */
@@ -144,7 +146,7 @@ target_initialize(void)
 	usart_early_init();
 #else // f401
 	core_initialize();
-
+	tPutLogTarget_initialize();
 #endif // f401
 }
 

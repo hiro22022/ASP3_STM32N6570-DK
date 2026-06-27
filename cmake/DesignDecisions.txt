@@ -1,0 +1,83 @@
+TECS / ASP3 CMake 対応 — 設計決定
+====================================
+
+1. CMake 化の方針 (decide-approach)
+-----------------------------------
+採用: ハイブリッド段階移行 + マニフェスト方式
+
+- 既存 configure.rb + GNU Make ビルドは維持する
+- 並行して CMake ビルドパスを追加する (obj_cmake_n657 等)
+- tecsgen は Makefile.tecsgen に加え CMakeLists.tecsgen.cmake を生成する
+- 全面 Make 廃止は行わない (上流 TOPPERS との整合・既存ターゲット維持)
+
+2. TECSGEN::CMake API (design-tecsgen-cmake-api)
+------------------------------------------------
+採用: TECSGEN::Makefile と対称な Ruby モジュール
+
+- tecsgen/tecslib/core/tecsgen.rb に TECSGEN::CMake を追加
+- プラグイン向け API:
+    add_source(path)       追加コンパイル対象 .c
+    add_include(path)      追加 include ディレクトリ
+    add_define(name)       追加プリプロセッサ定義
+    add_link_option(opt)   追加リンクオプション
+    add_custom_command()   ビルド時カスタムコマンド記述
+    add_line(text)         生成 CMake への生追記
+- gen_cmake_tecsgen (generate.rb) がマニフェスト CMakeLists.tecsgen.cmake を出力
+- asp3_tecs_apply_manifest() (cmake/Asp3Tecs.cmake) がマニフェストをターゲットへ適用
+
+CDL の write("Makefile.tecsgen", ...) は現状 Make 専用。mruby 等は
+TECSGEN::CMake.add_source / add_custom_command への移行が別途必要。
+
+3. コード生成タイミング (design-codegen-timing)
+-----------------------------------------------
+採用: configure 時生成 + CMAKE_CONFIGURE_DEPENDS (方式 A + C)
+
+- 初回 cmake 構成時、CDL が存在すれば tecsgen を execute_process で実行
+- 生成された CMakeLists.tecsgen.cmake を include() してソース一覧を取得
+- CDL / import 先の変更は CMAKE_CONFIGURE_DEPENDS で再 configure を促す
+- cfg.rb 3 パスはビルド時 add_custom_command (ELF リンクを含む中間成果物が必要)
+
+理由: Make と同様に「生成物の一覧が configure 時点で確定」する必要があり、
+マニフェスト include が最も単純。ビルドのたびに tecsgen を走らせる方式 B は
+Ninja の依存グラフ管理が複雑になる。
+
+4. ASP3 コアの CMake 再現範囲 (scope-asp3-cmake)
+------------------------------------------------
+CMake で再現する範囲 (フェーズ 1):
+
+[含む]
+- tecsgen 実行と生成ソースのコンパイル
+- cfg.rb pass 1/2/3 (構成チェック含む)
+- libkernel 静的ライブラリ (-DALLFUNC モード)
+- syssvc / tecs_kernel / library / sample アプリ
+- ターゲット依存部の取り込み (cmake/targets/*.cmake)
+
+[含まない (フェーズ 1)]
+- configure.rb の全オプション互換
+- KERNEL_FUNCOBJS (関数単位分割コンパイル)
+- C++ アプリ (-l stdc++)
+- トレースログ (-r)
+- extension カーネル拡張
+- 全ターゲットの一括サポート (stm32n6570_dk のみ)
+
+5. STM32N6570-DK 固有範囲 (scope-target-n657)
+---------------------------------------------
+cmake/targets/stm32n6570_dk.cmake に集約:
+
+[含む]
+- Makefile.target の TARGET_COBJS 相当 HAL / Cube 生成コード
+- スタートアップ startup_stm32n657xx.s, arch start.S
+- リンカスクリプト STM32N657XX_LRUN_ns.ld
+- Cortex-M55 / FPU hard / USE_SYSTICK_AS_TIMETICK
+- sample1_n657.{cdl,cfg,c} デフォルト構成
+
+[含まない]
+- STM32Cube CMSIS-DSP CMake ビルド (ベンダー CMakeLists は未統合)
+- Flash 書き込み run ターゲット
+- TrustZone セキュア側ビルド
+
+ビルド手順 (CMake):
+  mkdir build_n657 && cd build_n657
+  cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-arm-none-eabi.cmake \
+           -DASP3_TARGET=stm32n6570_dk
+  cmake --build .

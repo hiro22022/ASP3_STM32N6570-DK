@@ -73,3 +73,8 @@ obj_h747_cm7/go_cm7.sh
 target/stm32h747_discovery_m7/stm32hcube/CM4/Debug/go_obj.sh
 target/stm32h747_discovery_m7/stm32hcube/CM7/Debug/go_obj.sh
 
+obj_n657/gen/*
+obj_n657/objs/*
+
+build_cmake_n657/gen_test/*
+

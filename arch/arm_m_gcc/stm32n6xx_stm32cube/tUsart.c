@@ -43,7 +43,7 @@
  */
 
 #include <sil.h>
-#include "stm32h7xx_hal.h"
+#include "stm32n6xx_hal.h"
 #include "tUsart_tecsgen.h"
 
 /*

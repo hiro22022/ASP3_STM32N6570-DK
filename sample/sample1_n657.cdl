@@ -4,6 +4,15 @@
 import(<kernel.cdl>);
 
 /*
+ *  ターゲット非依存のセルタイプの定義
+ */
+import("syssvc/tSerialPort.cdl");
+import("syssvc/tSysLog.cdl");
+import("syssvc/tSysLogAdapter.cdl");
+import("syssvc/tLogTask.cdl");
+import("syssvc/tBanner.cdl");
+
+/*
  *  ターゲット依存部の取り込み
  */
 import("target.cdl");
@@ -12,4 +21,51 @@ import("target.cdl");
  *  カーネル API セル（TECS ランタイム用）
  */
 cell tKernel ASPKernel {
+};
+
+/*
+ *		システムログ機能のアダプタの組上げ記述
+ */
+cell tSysLogAdapter SysLogAdapter {
+	cSysLog = SysLog.eSysLog;
+};
+
+/*
+ *		システムログ機能の組上げ記述
+ */
+cell tSysLog SysLog {
+	logBufferSize = 32;
+	initLogMask = C_EXP("LOG_UPTO(LOG_NOTICE)");
+	initLowMask = C_EXP("LOG_UPTO(LOG_EMERG)");
+	cPutLog = PutLogTarget.ePutLog;
+};
+
+/*
+ *		シリアルインタフェースドライバの組上げ記述
+ */
+cell tSerialPort SerialPort1 {
+	receiveBufferSize = 256;
+	sendBufferSize    = 256;
+	cSIOPort = SIOPortTarget1.eSIOPort;
+	eiSIOCBR <= SIOPortTarget1.ciSIOCBR;
+};
+
+/*
+ *		システムログタスクの組上げ記述
+ */
+cell tLogTask LogTask {
+	priority  = 3;
+	stackSize = LogTaskStackSize;
+	cSerialPort        = SerialPort1.eSerialPort;
+	cnSerialPortManage = SerialPort1.enSerialPortManage;
+	cSysLog = SysLog.eSysLog;
+	cPutLog = PutLogTarget.ePutLog;
+};
+
+/*
+ *		カーネル起動メッセージ出力の組上げ記述
+ */
+cell tBanner Banner {
+	targetName      = BannerTargetName;
+	copyrightNotice = BannerCopyrightNotice;
 };

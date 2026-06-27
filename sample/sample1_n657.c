@@ -3,6 +3,7 @@
  */
 #include "sample1_n657.h"
 #include "led_btn_joy.h"
+#include <t_syslog.h>
 
 volatile unsigned int n657_task1_count;
 volatile unsigned int n657_main_count;
@@ -26,6 +27,7 @@ main_task(intptr_t exinf)
 {
 	(void)exinf;
 	led_init();
+	syslog(LOG_NOTICE, "N657 sample started.");
 	for (;;) {
 		n657_main_count++;
 		led_toggle(0);		/* LD1 (green) */

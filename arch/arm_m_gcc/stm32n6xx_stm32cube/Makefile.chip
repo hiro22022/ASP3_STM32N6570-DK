@@ -37,7 +37,7 @@ KERNEL_COBJS := $(KERNEL_COBJS)
 #
 #  システムサービスに関する定義
 #
-SYSSVC_DIR := $(SYSSVC_DIR) $(SRCDIR)/arch/$(PRC)_$(TOOL)/$(CHIP)
+SYSSVC_DIRS := $(SYSSVC_DIRS) $(SRCDIR)/arch/$(PRC)_$(TOOL)/$(CHIP)
 SYSSVC_COBJS := $(SYSSVC_COBJS)
 
 #

@@ -31,7 +31,7 @@ INCLUDES := $(INCLUDES) -I$(TARGETDIR) -I$(TARGETDIR)/stm32hcube \
 	-I$(TARGETDIR)/stm32hcube/AppliNonSecure/Core/Inc \
 	-I$(TARGETDIR)/stm32hcube/Secure_nsclib \
 	-I../syssvc -I../kernel
-CDEFS := $(CDEFS) -DSTM32N657xx -DUSE_HAL_DRIVER -DTOPPERS_OMIT_SYSLOG
+CDEFS := $(CDEFS) -DSTM32N657xx -DUSE_HAL_DRIVER -Dfloat_t=float
 COPTS := $(COPTS)
 LDFLAGS := -nostdlib --specs=nosys.specs \
 		-static \
@@ -51,6 +51,7 @@ TARGET_COBJS = target_kernel_impl.o target_kernel_impl2.o \
 				stm32n6xx_hal_pwr.o stm32n6xx_hal_pwr_ex.o \
 				stm32n6xx_hal_rcc.o stm32n6xx_hal_rcc_ex.o \
 				stm32n6xx_hal_tim.o stm32n6xx_hal_tim_ex.o \
+				stm32n6xx_hal_uart.o stm32n6xx_hal_uart_ex.o \
 				stm32n6xx_ll_exti.o \
 				stm32n6xx_ll_rcc.o \
 				stm32n6xx_ll_utils.o
@@ -68,7 +69,7 @@ KERNEL_DIRS := $(KERNEL_DIRS) $(TARGETDIR) \
 KERNEL_ASMOBJS := $(KERNEL_ASMOBJS)
 FINAL_START_OBJS = start.o startup_stm32n657xx.o
 KERNEL_COBJS := $(KERNEL_COBJS)
-KERNEL_CFLAGS := $(KERNEL_CFLAGS) -DTOPPERS_OMIT_SYSLOG
+KERNEL_CFLAGS := $(KERNEL_CFLAGS)
 
 #
 #  Cube 由来スタートアップ（拡張子 .s）のビルド

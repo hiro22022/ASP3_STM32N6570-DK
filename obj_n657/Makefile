@@ -197,7 +197,7 @@ ifdef USE_CXX
 else
 	APPL_COBJS := sample1_n657.o
 endif
-APPL_COBJS := $(APPL_COBJS) $(TARGET_COBJS)
+APPL_COBJS := $(APPL_COBJS) log_output.o vasyslog.o t_perror.o strerror.o $(TARGET_COBJS)
 APPL_CFLAGS := $(APPL_CFLAGS)
 ifdef APPLDIRS
 	INCLUDES := $(INCLUDES) $(foreach dir,$(APPLDIRS),-I$(dir))
