@@ -102,16 +102,28 @@ usart_getchar(CELLCB *p_cellcb)
 }
 
 /*
- *  送信する文字の書込み
+ *  送信する文字の書込み（TC まで待つ）
  */
 Inline void
 usart_putchar(CELLCB *p_cellcb, char c)
 {
-#if 0 // STM32F401RE
-	sil_wrw_mem((void*)USART_DR(ATTR_baseAddress), c);
-#else // STM32F401RE
-	(((USART_TypeDef *)ATTR_baseAddress)->TDR) = (uint32_t)(uint8_t)c;
-#endif // STM32F401RE
+	USART_TypeDef *usart = (USART_TypeDef *)ATTR_baseAddress;
+	uint32_t guard = 0U;
+
+	(void)p_cellcb;
+
+	while ((usart->ISR & USART_ISR_TXE_TXFNF) == 0U) {
+		if (++guard > 2000000U) {
+			return;
+		}
+	}
+	usart->TDR = (uint32_t)(uint8_t)c;
+	guard = 0U;
+	while ((usart->ISR & USART_ISR_TC) == 0U) {
+		if (++guard > 2000000U) {
+			return;
+		}
+	}
 }
 
 /*
@@ -120,45 +132,67 @@ usart_putchar(CELLCB *p_cellcb, char c)
 void
 eSIOPort_open(CELLIDX idx)
 {
-#if 0 // STM32F401RE
-	uint32_t tmp, usartdiv, fraction;
-	uint32_t src_clock;
 	CELLCB	*p_cellcb = GET_CELLCB(idx);
+	USART_TypeDef *usart = (USART_TypeDef *)ATTR_baseAddress;
 
-	/* USARTの無効化 */
-	sil_andw((void*)USART_CR1(ATTR_baseAddress), ~USART_CR1_UE);
-
-	/* 1STOP BIT */
-	sil_wrw_mem((void*)USART_CR2(ATTR_baseAddress), 0);
-
-	/* 1START BIT, 8DATA bits, Parityなし */
-	sil_wrw_mem((void*)USART_CR1(ATTR_baseAddress), 0);
-
-	/* CR3初期化 */
-	sil_wrw_mem((void*)USART_CR3(ATTR_baseAddress), 0);
-
-	/* 通信速度設定 */
-	if (ATTR_baseAddress == USART1_BASE) {
-		/* USART1のみPCLK2を使用する */
-		src_clock = HAL_RCC_GetPCLK2Freq();
-	} else {
-		src_clock = HAL_RCC_GetPCLK1Freq();
+	/*
+	 * target_initialize() の HAL 初期化済みなら再設定しない
+	 * （LogTask からの 2 回目 open で USART を壊さない）
+	 */
+	if ((usart->CR1 & USART_CR1_UE) != 0U) {
+		return;
 	}
 
-	tmp = (1000 * (src_clock / 100)) / ((ATTR_bps / 100) * 16);
-	usartdiv = (tmp / 1000) << 4;
-	fraction = tmp - ((usartdiv >> 4) * 1000);
-	fraction = ((16 * fraction) + 500) / 1000;
-	usartdiv |= (fraction & 0x0F);
-	sil_wrw_mem((void*)USART_BRR(ATTR_baseAddress), usartdiv);
+	{
+		uint32_t tmp, usartdiv, fraction;
+		uint32_t src_clock;
+		RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+		GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-	/* 送受信の有効化、エラー割込みの有効化 */
-	sil_orw((void*)USART_CR1(ATTR_baseAddress), USART_CR1_RE | USART_CR1_TE);
-	sil_orw((void*)USART_CR3(ATTR_baseAddress), USART_CR3_EIE);
+		if (ATTR_baseAddress == USART1_BASE) {
+			PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CKPER;
+			PeriphClkInitStruct.CkperClockSelection = RCC_CLKPCLKSOURCE_HSI;
+			(void)HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
 
-	/* USARTの有効化 */
-	sil_orw((void*)USART_CR1(ATTR_baseAddress), USART_CR1_UE);
-#endif // STM32F401RE
+			PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART1;
+			PeriphClkInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_CLKP;
+			(void)HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
+
+			__HAL_RCC_USART1_CLK_ENABLE();
+			__HAL_RCC_GPIOE_CLK_ENABLE();
+			GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6;
+			GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+			GPIO_InitStruct.Pull = GPIO_NOPULL;
+			GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+			GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
+			HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+		}
+
+		usart->CR1 &= ~USART_CR1_UE;
+		usart->CR2 = 0U;
+		usart->CR1 = 0U;
+		usart->CR3 = 0U;
+
+		if (ATTR_baseAddress == USART1_BASE) {
+			src_clock = HAL_RCCEx_GetPeriphCLKFreq(RCC_PERIPHCLK_USART1);
+		} else {
+			src_clock = HAL_RCC_GetPCLK1Freq();
+		}
+		if (src_clock == 0U) {
+			src_clock = HSI_VALUE;
+		}
+
+		tmp = (1000U * (src_clock / 100U)) / ((ATTR_bps / 100U) * 16U);
+		usartdiv = (tmp / 1000U) << 4;
+		fraction = tmp - ((usartdiv >> 4) * 1000U);
+		fraction = ((16U * fraction) + 500U) / 1000U;
+		usartdiv |= (fraction & 0x0FU);
+		usart->BRR = usartdiv;
+
+		usart->CR1 = USART_CR1_RE | USART_CR1_TE;
+		usart->CR3 = USART_CR3_EIE;
+		usart->CR1 |= USART_CR1_UE;
+	}
 }
 
 /*
@@ -167,14 +201,10 @@ eSIOPort_open(CELLIDX idx)
 void
 eSIOPort_close(CELLIDX idx)
 {
-#if 0 // STM32F401RE
 	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
-	/*
-	 *  USARTをディスエーブル
-	 */
+	(void)p_cellcb;
 	sil_andw((void*)USART_CR1(ATTR_baseAddress), ~USART_CR1_UE);
-#endif // STM32F401RE
 }
 
 /*
@@ -184,12 +214,15 @@ bool_t
 eSIOPort_putChar(CELLIDX idx, char c)
 {
 	CELLCB	*p_cellcb = GET_CELLCB(idx);
+	uint32_t guard = 0U;
 
-	if (usart_putready(p_cellcb)){
-		usart_putchar(p_cellcb, c);
-		return(true);
+	while (!usart_putready(p_cellcb)) {
+		if (++guard > 2000000U) {
+			return(false);
+		}
 	}
-	return(false);
+	usart_putchar(p_cellcb, c);
+	return(true);
 }
 
 /*
@@ -212,26 +245,9 @@ eSIOPort_getChar(CELLIDX idx)
 void
 eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
 {
-	CELLCB		*p_cellcb = GET_CELLCB(idx);
-
-	switch (cbrtn) {
-	case SIOSendReady:
-#if 0 // STM32F401RE
-		sil_orw((void*)USART_CR1(ATTR_baseAddress), USART_CR1_TXEIE);
-#else
-	 // UART_IT_TXE CR1 bit 7
-		((USART_TypeDef *)ATTR_baseAddress)->CR1 |= USART_CR1_TXEIE_TXFNFIE;
-#endif // STM32F401RE
-		break;
-	case SIOReceiveReady:
-#if 0 // STM32F401RE
-		sil_orw((void*)USART_CR1(ATTR_baseAddress), USART_CR1_RXNEIE);
-#else
-	 // UART_IT_RXNE CR1 bit 5
-		((USART_TypeDef *)ATTR_baseAddress)->CR1 |= USART_CR1_RXNEIE_RXFNEIE;
-#endif // STM32F401RE
-		break;
-	}
+	(void)idx;
+	(void)cbrtn;
+	/* syslog 向け: ポーリング送信のみ（TX/RX 割込みは使わない） */
 }
 
 /*
@@ -240,26 +256,8 @@ eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
 void
 eSIOPort_disableCBR(CELLIDX idx, uint_t cbrtn)
 {
-	CELLCB		*p_cellcb = GET_CELLCB(idx);
-
-	switch (cbrtn) {
-	case SIOSendReady:
-#if 0 // STM32F401RE
-		sil_andw((void*)USART_CR1(ATTR_baseAddress), ~USART_CR1_TXEIE);
-#else
-	 // UART_IT_TXE CR1 bit 7
-		((USART_TypeDef *)ATTR_baseAddress)->CR1 &= ~USART_CR1_TXEIE_TXFNFIE;
-#endif // STM32F401RE
-		break;
-	case SIOReceiveReady:
-#if 0 // STM32F401RE
-		sil_andw((void*)USART_CR1(ATTR_baseAddress), ~USART_CR1_RXNEIE);
-#else
-	 // UART_IT_RXNE CR1 bit 5
-		((USART_TypeDef *)ATTR_baseAddress)->CR1 &= ~USART_CR1_RXNEIE_RXFNEIE;
-#endif // STM32F401RE
-		break;
-	}
+	(void)idx;
+	(void)cbrtn;
 }
 
 /*

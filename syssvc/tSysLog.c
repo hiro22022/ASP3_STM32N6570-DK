@@ -107,8 +107,10 @@ eSysLog_write(uint_t priority, const SYSLOG *p_syslog)
 	 */
 #ifdef CORE_CM4
 	((SYSLOG *)p_syslog)->proc_char = '4';
-#elif defined( CORE_CM7 )
+#elif defined(CORE_CM7)
 	((SYSLOG *)p_syslog)->proc_char = '7';
+#elif defined(TOPPERS_CORTEX_M55)
+	((SYSLOG *)p_syslog)->proc_char = '5';
 #else
 	((SYSLOG *)p_syslog)->proc_char = '?';
 #endif /* CORE_CM4 */

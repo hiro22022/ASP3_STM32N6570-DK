@@ -131,6 +131,7 @@ composite tSIOPortTarget {
 	cell tInterruptRequest InterruptRequest {
 		interruptNumber   = composite.interruptNumber;
 		interruptPriority = composite.interruptPriority;
+		attribute         = C_EXP("TA_ENAINT");
 	};
 };
 

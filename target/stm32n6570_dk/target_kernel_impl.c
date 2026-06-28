@@ -78,18 +78,56 @@ extern void SystemInit(void);
  *  クロックの初期化(systemclock_config.c)
  */
 extern void SystemClock_Config(void);
-
-#if 0
-/*
- *  バーナ出力用のUARTの初期化
- */
-static void usart_early_init(void);
-#endif // 0
-
-/*
- *  エラー時の処理
- */
 extern void Error_Handler(void);
+
+static UART_HandleTypeDef s_huart1;
+
+static void
+usart_early_init(void)
+{
+	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+	/* USART1 CLKP ソース（HSI）を main と同様に明示 */
+	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_CKPER;
+	PeriphClkInitStruct.CkperClockSelection = RCC_CLKPCLKSOURCE_HSI;
+	if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
+		Error_Handler();
+	}
+
+	s_huart1.Instance = USART1;
+	s_huart1.Init.BaudRate = BPS_SETTING;
+	s_huart1.Init.WordLength = UART_WORDLENGTH_8B;
+	s_huart1.Init.StopBits = UART_STOPBITS_1;
+	s_huart1.Init.Parity = UART_PARITY_NONE;
+	s_huart1.Init.Mode = UART_MODE_TX;
+	s_huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	s_huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+	s_huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+	s_huart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+	s_huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+	if (HAL_UART_Init(&s_huart1) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_UARTEx_SetTxFifoThreshold(&s_huart1, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_UARTEx_SetRxFifoThreshold(&s_huart1, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_UARTEx_DisableFifoMode(&s_huart1) != HAL_OK) {
+		Error_Handler();
+	}
+
+	/*
+	 * syslog はポーリング TX のみ．RX/エラー割込みを止め，ISR 混線を防ぐ
+	 */
+	USART1->ICR = USART_ICR_PECF | USART_ICR_FECF | USART_ICR_NECF
+				| USART_ICR_ORECF | USART_ICR_IDLECF | USART_ICR_TCCF;
+	USART1->CR3 &= ~USART_CR3_EIE;
+	USART1->CR1 &= ~(USART_CR1_RE | USART_CR1_RXNEIE_RXFNEIE
+				| USART_CR1_TXEIE_TXFNFIE | USART_CR1_TCIE);
+	USART1->CR1 |= (USART_CR1_TE | USART_CR1_UE);
+}
 
 /*
  *  起動時のハードウェア初期化処理
@@ -146,6 +184,7 @@ target_initialize(void)
 	usart_early_init();
 #else // f401
 	core_initialize();
+	usart_early_init();
 	tPutLogTarget_initialize();
 #endif // f401
 }
@@ -165,7 +204,7 @@ target_exit(void)
 static UART_HandleTypeDef UartHandle;
 
 void
-usart_early_init()
+usart_early_init_legacy()
 {
 	usart_low_init();
 
