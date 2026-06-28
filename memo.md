@@ -48,19 +48,20 @@ main → sta_ker → tLogTaskMain_eLogTaskBody_main → main_task
 |------|------|------|
 | `main()` | `HAL_Init()` → CKPER(HSI) → `SystemCoreClockUpdate()` → `sta_ker()` | **UART 初期化しない** |
 | `sta_ker()` 内 `target_initialize()` | `core_initialize()` → `usart_early_init()` → `tPutLogTarget_initialize()` | **ここで USART1 初期化** |
-| LogTask | `cSerialPort_open()` → syslog 出力 | tUsart は **ポーリング TX のみ** |
+| LogTask | `cSerialPort_open()` → syslog 出力 | tUsart は **割り込み TX/RX**（`enableCBR` 制御） |
 
 **禁止**: `main()` 内の `MX_USART1_UART_Init()`（`sta_ker` 前）。NS VTOR が TOPPERS ベクタ（`0x24100400`）のとき割込みが `core_int_entry` → 例外で落ちる。
 
 **UART 実装の要点**（`target_kernel_impl.c` + `tUsart.c`）:
 
-- HAL で USART1 を **TX 専用・115200 8N1** 初期化（CLKP/HSI、`hal_msp.c` で PE5/PE6）
-- 初期化後 **RX・エラー・TX 割込みを CR1/CR3 で無効化**（syslog はポーリング送信）
-- `eSIOPort_putChar` は TXE/TC を待ってから 1 文字送信
-- `eSIOPort_enableCBR` は no-op（シリアルドライバの TX/RX 割込みコールバックを使わない）
-- `eSIOPort_open` は UE 済みなら再初期化しない（LogTask の 2 回目 open で壊さない）
+- **早期 syslog**: `usart_early_init()`（HAL）→ `tPutLogTarget` が `putChar` を **CPU ポーリング**
+- **LogTask 以降**: `tSerialPortMain` が送信バッファ満杯時に `enableCBR(SIOSendReady)` → `_kernel_inthdr_175` → `eiISR_main` → `readySend`
+- HAL で USART1 を **115200 8N1** 初期化（CLKP/HSI、`hal_msp.c` で PE5/PE6）。2 回目 `open`（UE=1）は BRR/GPIO を触らず **ICR クリア + 割込みビット OFF** のみ
+- `eSIOPort_putChar` は非ブロッキング（ready なら 1 文字送信、でなければ false → CBR 経由で続き）
+- `eSIOPort_enableCBR` / `disableCBR` で TXEIE/RXNEIE を制御
+- `eiISR_main` で ORE/FE/NE/PE を ICR クリア
 
-**文字化けの原因（解消済み）**: HAL UART と tUsart レジスタアクセスの混在、および送信バッファ満杯後の **TX 割込み経路** への切り替え。上記ポーリング TX 統一で解消。
+**文字化けの原因（旧ポーリング暫定時）**: HAL UART と tUsart レジスタアクセスの混在、および送信バッファ満杯後の **TX 割込み経路** への切り替え時の不整合。HAL 継続 + UE 時正規化 + enableCBR 制御で回避。
 
 **試行して却下したもの**: `prep_nkernel_vectors()` / `restore_toppers_irq_vectors()`（`sta_ker` 後の `target_initialize` で `main_task` 未到達・LED 不点滅の原因になったため **現行では未使用**）。
 
@@ -343,7 +344,7 @@ continue
 |----------|------|
 | `target/stm32n6570_dk/main_kernel.c` | HAL + CKPER → `sta_ker()`（UART なし） |
 | `target/stm32n6570_dk/target_kernel_impl.c` | `usart_early_init()`、`target_initialize()` |
-| `arch/arm_m_gcc/stm32n6xx_stm32cube/tUsart.c` | ポーリング TX、`eSIOPort_open` |
+| `arch/arm_m_gcc/stm32n6xx_stm32cube/tUsart.c` | 割り込み TX/RX、`eSIOPort_open` UE 正規化 |
 | `syssvc/tSysLog.c` | M55 向け proc_char `'5'` |
 | `target/.../stm32n6xx_hal_msp.c` | USART1 PE5/PE6、CLKP |
 | `sample/sample1_n657.cdl` | LogTask / syslog / Banner |

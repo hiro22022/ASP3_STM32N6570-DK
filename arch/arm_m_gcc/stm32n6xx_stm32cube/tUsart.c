@@ -57,6 +57,20 @@
 #define USART_CR3(x)	(x + 0x14)
 #define USART_GTPR(x)	(x + 0x18)
 
+static Inline void
+usart_clear_error_flags(USART_TypeDef *usart)
+{
+	usart->ICR = USART_ICR_PECF | USART_ICR_FECF | USART_ICR_NECF
+			| USART_ICR_ORECF | USART_ICR_IDLECF | USART_ICR_TCCF;
+}
+
+static Inline void
+usart_disable_periph_interrupts(USART_TypeDef *usart)
+{
+	usart->CR3 &= ~USART_CR3_EIE;
+	usart->CR1 &= ~(USART_CR1_RXNEIE_RXFNEIE | USART_CR1_TXEIE_TXFNFIE
+			| USART_CR1_TCIE);
+}
 
 /*
  *  プリミティブな送信／受信関数
@@ -102,28 +116,13 @@ usart_getchar(CELLCB *p_cellcb)
 }
 
 /*
- *  送信する文字の書込み（TC まで待つ）
+ *  送信する文字の書込み
  */
 Inline void
 usart_putchar(CELLCB *p_cellcb, char c)
 {
-	USART_TypeDef *usart = (USART_TypeDef *)ATTR_baseAddress;
-	uint32_t guard = 0U;
-
 	(void)p_cellcb;
-
-	while ((usart->ISR & USART_ISR_TXE_TXFNF) == 0U) {
-		if (++guard > 2000000U) {
-			return;
-		}
-	}
-	usart->TDR = (uint32_t)(uint8_t)c;
-	guard = 0U;
-	while ((usart->ISR & USART_ISR_TC) == 0U) {
-		if (++guard > 2000000U) {
-			return;
-		}
-	}
+	(((USART_TypeDef *)ATTR_baseAddress)->TDR) = (uint32_t)(uint8_t)c;
 }
 
 /*
@@ -140,6 +139,8 @@ eSIOPort_open(CELLIDX idx)
 	 * （LogTask からの 2 回目 open で USART を壊さない）
 	 */
 	if ((usart->CR1 & USART_CR1_UE) != 0U) {
+		usart_clear_error_flags(usart);
+		usart_disable_periph_interrupts(usart);
 		return;
 	}
 
@@ -214,15 +215,12 @@ bool_t
 eSIOPort_putChar(CELLIDX idx, char c)
 {
 	CELLCB	*p_cellcb = GET_CELLCB(idx);
-	uint32_t guard = 0U;
 
-	while (!usart_putready(p_cellcb)) {
-		if (++guard > 2000000U) {
-			return(false);
-		}
+	if (usart_putready(p_cellcb)) {
+		usart_putchar(p_cellcb, c);
+		return(true);
 	}
-	usart_putchar(p_cellcb, c);
-	return(true);
+	return(false);
 }
 
 /*
@@ -245,9 +243,19 @@ eSIOPort_getChar(CELLIDX idx)
 void
 eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
 {
-	(void)idx;
-	(void)cbrtn;
-	/* syslog 向け: ポーリング送信のみ（TX/RX 割込みは使わない） */
+	CELLCB		*p_cellcb = GET_CELLCB(idx);
+	USART_TypeDef *usart = (USART_TypeDef *)ATTR_baseAddress;
+
+	(void)p_cellcb;
+
+	switch (cbrtn) {
+	case SIOSendReady:
+		usart->CR1 |= USART_CR1_TXEIE_TXFNFIE;
+		break;
+	case SIOReceiveReady:
+		usart->CR1 |= USART_CR1_RXNEIE_RXFNEIE;
+		break;
+	}
 }
 
 /*
@@ -256,8 +264,19 @@ eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
 void
 eSIOPort_disableCBR(CELLIDX idx, uint_t cbrtn)
 {
-	(void)idx;
-	(void)cbrtn;
+	CELLCB		*p_cellcb = GET_CELLCB(idx);
+	USART_TypeDef *usart = (USART_TypeDef *)ATTR_baseAddress;
+
+	(void)p_cellcb;
+
+	switch (cbrtn) {
+	case SIOSendReady:
+		usart->CR1 &= ~USART_CR1_TXEIE_TXFNFIE;
+		break;
+	case SIOReceiveReady:
+		usart->CR1 &= ~USART_CR1_RXNEIE_RXFNEIE;
+		break;
+	}
 }
 
 /*
@@ -267,6 +286,13 @@ void
 eiISR_main(CELLIDX idx)
 {
 	CELLCB	*p_cellcb = GET_CELLCB(idx);
+	USART_TypeDef *usart = (USART_TypeDef *)ATTR_baseAddress;
+	uint32_t isr = usart->ISR;
+
+	if ((isr & (USART_ISR_ORE | USART_ISR_FE | USART_ISR_NE | USART_ISR_PE)) != 0U) {
+		usart->ICR = USART_ICR_PECF | USART_ICR_FECF | USART_ICR_NECF
+				| USART_ICR_ORECF;
+	}
 
 	if (usart_getready(p_cellcb)) {
 		/*

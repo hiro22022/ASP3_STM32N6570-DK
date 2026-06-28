@@ -99,7 +99,7 @@ usart_early_init(void)
 	s_huart1.Init.WordLength = UART_WORDLENGTH_8B;
 	s_huart1.Init.StopBits = UART_STOPBITS_1;
 	s_huart1.Init.Parity = UART_PARITY_NONE;
-	s_huart1.Init.Mode = UART_MODE_TX;
+	s_huart1.Init.Mode = UART_MODE_TX_RX;
 	s_huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
 	s_huart1.Init.OverSampling = UART_OVERSAMPLING_16;
 	s_huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
@@ -118,15 +118,9 @@ usart_early_init(void)
 		Error_Handler();
 	}
 
-	/*
-	 * syslog はポーリング TX のみ．RX/エラー割込みを止め，ISR 混線を防ぐ
-	 */
+	/* 残留フラグクリア（割込みビットは enableCBR から制御） */
 	USART1->ICR = USART_ICR_PECF | USART_ICR_FECF | USART_ICR_NECF
 				| USART_ICR_ORECF | USART_ICR_IDLECF | USART_ICR_TCCF;
-	USART1->CR3 &= ~USART_CR3_EIE;
-	USART1->CR1 &= ~(USART_CR1_RE | USART_CR1_RXNEIE_RXFNEIE
-				| USART_CR1_TXEIE_TXFNFIE | USART_CR1_TCIE);
-	USART1->CR1 |= (USART_CR1_TE | USART_CR1_UE);
 }
 
 /*

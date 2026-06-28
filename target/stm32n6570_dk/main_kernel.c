@@ -1,7 +1,8 @@
 /*
  *  TOPPERS/ASP 起動用 main（STM32N6570-DK）
  *
- *  一時的に b6ec122 相当（syslog/UART 初期化なし）へ戻している。
+ *  HAL 早期初期化 + tPutLogTarget ポーリングで早期 syslog。
+ *  LogTask 以降は tUsart 割り込み駆動。
  */
 #include "main.h"
 
