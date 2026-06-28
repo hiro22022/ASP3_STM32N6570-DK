@@ -57,14 +57,14 @@
 #define USART_CR3(x)	(x + 0x14)
 #define USART_GTPR(x)	(x + 0x18)
 
-static Inline void
+Inline void
 usart_clear_error_flags(USART_TypeDef *usart)
 {
 	usart->ICR = USART_ICR_PECF | USART_ICR_FECF | USART_ICR_NECF
 			| USART_ICR_ORECF | USART_ICR_IDLECF | USART_ICR_TCCF;
 }
 
-static Inline void
+Inline void
 usart_disable_periph_interrupts(USART_TypeDef *usart)
 {
 	usart->CR3 &= ~USART_CR3_EIE;
