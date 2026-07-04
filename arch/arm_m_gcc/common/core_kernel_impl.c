@@ -365,14 +365,26 @@ core_int_entry(void)
 void
 default_exc_handler(void *p_excinf)
 {
-	uint32_t basepri = *(((uint32_t*)p_excinf) + P_EXCINF_OFFSET_BASEPRI);
-	uint32_t pc      = *(((uint32_t*)p_excinf) + P_EXCINF_OFFSET_PC);
-	uint32_t xpsr    = *(((uint32_t*)p_excinf) + P_EXCINF_OFFSET_XPSR);
-	uint32_t excno   = get_ipsr() & IPSR_ISR_NUMBER;
+	uint32_t basepri;
+	uint32_t pc;
+	uint32_t xpsr;
+	uint32_t excno;
+
+	excno = get_ipsr() & IPSR_ISR_NUMBER;
+	if (p_excinf != NULL) {
+		basepri = *(((uint32_t*)p_excinf) + P_EXCINF_OFFSET_BASEPRI);
+		pc      = *(((uint32_t*)p_excinf) + P_EXCINF_OFFSET_PC);
+		xpsr    = *(((uint32_t*)p_excinf) + P_EXCINF_OFFSET_XPSR);
+	}
+	else {
+		basepri = get_basepri();
+		pc      = 0U;
+		xpsr    = 0U;
+	}
 
 	syslog(LOG_EMERG, "\nUnregistered Exception occurs.");
 	syslog(LOG_EMERG, "Excno = %08x PC = %08x XPSR = %08x basepri = %08X, p_excinf = %08X",
-		   excno, pc, xpsr, basepri, p_excinf);
+		   excno, pc, xpsr, basepri, (uint32_t)(unsigned long)p_excinf);
 
 	target_exit();
 }

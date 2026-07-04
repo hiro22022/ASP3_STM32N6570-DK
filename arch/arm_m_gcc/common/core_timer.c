@@ -67,6 +67,7 @@ target_hrt_initialize(intptr_t exinf)
 	tmp = sil_rew_mem((void *)SYSTIC_CONTROL_STATUS);
 	tmp &= ~SYSTIC_ENABLE;
 	sil_wrw_mem((void *)SYSTIC_CONTROL_STATUS, tmp);
+	SCB->ICSR = SCB_ICSR_PENDSTCLR_Msk;
 
 	sil_wrw_mem((void *)SYSTIC_RELOAD_VALUE, cyc);
 	sil_wrw_mem((void *)SYSTIC_CURRENT_VALUE, cyc);

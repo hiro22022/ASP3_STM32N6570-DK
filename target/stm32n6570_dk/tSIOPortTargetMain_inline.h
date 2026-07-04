@@ -58,9 +58,10 @@ eSIOPort_open(CELLIDX idx)
 	cSIOPort_open();
 
 	/*
-	 *  SIOの割込みマスクを解除する．
+	 *  NVIC 割込み許可は eSIOPort_enableCBR 側へ遅延する。
+	 *  ここで enable すると sta_ker の initialize_interrupt 前に
+	 *  USART 割込みが入り default_int_handler → target_exit になる。
 	 */
-	cInterruptRequest_enable();
 }
 
 /*
@@ -112,6 +113,7 @@ eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
 {
 	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
+	cInterruptRequest_enable();
 	cSIOPort_enableCBR(cbrtn);
 }
 

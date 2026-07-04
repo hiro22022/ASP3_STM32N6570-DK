@@ -83,6 +83,23 @@ extern void Error_Handler(void);
 static UART_HandleTypeDef s_huart1;
 
 static void
+n657_stop_systick_before_kernel(void)
+{
+	uint32_t tmp;
+
+	/*
+	 * FSBL/Secure 由来の SysTick のみ止める。
+	 * NVIC->ICER 全解除は NS から SecureFault になるため行わない。
+	 */
+	tmp = sil_rew_mem((void *)SYSTIC_CONTROL_STATUS);
+	tmp &= ~(SYSTIC_ENABLE | SYSTIC_TICINT);
+	sil_wrw_mem((void *)SYSTIC_CONTROL_STATUS, tmp);
+	tmp = sil_rew_mem((void *)NVIC_ICSR);
+	tmp &= ~NVIC_PENDSTSET;
+	sil_wrw_mem((void *)NVIC_ICSR, tmp);
+}
+
+static void
 usart_early_init(void)
 {
 	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
@@ -121,6 +138,9 @@ usart_early_init(void)
 	/* 残留フラグクリア（割込みビットは enableCBR から制御） */
 	USART1->ICR = USART_ICR_PECF | USART_ICR_FECF | USART_ICR_NECF
 				| USART_ICR_ORECF | USART_ICR_IDLECF | USART_ICR_TCCF;
+	USART1->CR1 &= ~(USART_CR1_RXNEIE_RXFNEIE | USART_CR1_TXEIE_TXFNFIE
+				| USART_CR1_TCIE);
+	USART1->CR3 &= ~USART_CR3_EIE;
 }
 
 /*
@@ -177,6 +197,7 @@ target_initialize(void)
 	 */
 	usart_early_init();
 #else // f401
+	n657_stop_systick_before_kernel();
 	core_initialize();
 	usart_early_init();
 	tPutLogTarget_initialize();

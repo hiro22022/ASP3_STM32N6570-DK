@@ -28,6 +28,7 @@ int main(void)
 	PeriphCommonClock_Config();
 	SystemCoreClockUpdate();
 
+	SysTick->CTRL = 0U;
 	__enable_fault_irq();
 	b_sta_ker = 1;
 	sta_ker();

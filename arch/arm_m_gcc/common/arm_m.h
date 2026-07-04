@@ -63,10 +63,22 @@
 /*
  *  例外・割込み発生時にLRに設定されるEXC_RETURNの値
  */
-#if __TARGET_ARCH_THUMB >= 5 && ! defined(TOPPERS_ENABLE_TRUSTZONE)
+#if __TARGET_ARCH_THUMB >= 5
+#define EXC_RETURN_NO_FP        0xfffffffd
+#if defined(TOPPERS_CORTEX_M55) || defined(TOPPERS_ENABLE_TRUSTZONE)
+/*
+ *  Cortex-M55 (ARMv8.1-M) NS: Thread + PSP + FPU 拡張フレーム。
+ *  0xffffffbc は S=1 (Secure) のため NS アプリでは使わない。
+ */
+#define EXC_RETURN              0xffffffed
+#elif !defined(TOPPERS_ENABLE_TRUSTZONE)
 #define EXC_RETURN              0xffffffbc
 #else
+#define EXC_RETURN              0xffffffed
+#endif
+#else
 #define EXC_RETURN              0xfffffffd
+#define EXC_RETURN_NO_FP        0xfffffffd
 #endif
 #ifndef EXC_RETURN_PREFIX
 #define EXC_RETURN_PREFIX       0xff000000

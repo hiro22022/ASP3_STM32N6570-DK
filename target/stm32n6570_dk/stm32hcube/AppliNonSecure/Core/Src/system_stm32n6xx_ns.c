@@ -172,6 +172,19 @@ void SystemInit(void)
   SCB->VTOR = INTVECT_START;
 #endif  /* USER_VECT_TAB_ADDRESS */
 
+  /*
+   *  NS 側 FPU 有効化（-mfpu=fpv5-d16 ビルド必須）。
+   *  Secure 側 SystemInit が走らない LRUN/GDB 経路でも，
+   *  sta_ker → initialize_tecs より前に CPACR を有効にする。
+   */
+#if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+  /*
+   * NS 状態では SCB (0xE000EDxx) が NS 側 SCS にエイリアスされる。
+   * SCB_NS は __ARM_FEATURE_CMSE ビルドでのみ定義されるため使わない。
+   */
+  SCB->CPACR |= ((3UL << 20U) | (3UL << 22U));
+#endif
+
   /* Non-secure main application shall call SystemCoreClockUpdate() to update */
   /* the SystemCoreClock variable to insure non-secure application relies on  */
   /* the initial clock reference set by secure application.                   */

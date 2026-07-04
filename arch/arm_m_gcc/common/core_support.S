@@ -262,7 +262,7 @@ ALABEL(return_to_idle)
 AALIGN(2)
 #if 1
 	ldr    pc, [pc] /* return_to_idle のコメント参照 */
-	.word  EXC_RETURN
+	.word  EXC_RETURN_NO_FP
 #else
 	ldr pc, =#EXC_RETURN
 #endif
@@ -285,55 +285,58 @@ ALABEL(return_to_thread)
 #ifdef TOPPERS_FPU_CONTEXT
 	ldr    r2, [r0, #TCB_fpu_flag]
 	cbz    r2, return_to_thread_no_fp
+	mov    r12, r0
+	ldr    r1, [r12, #TCB_pc]
 	ldr    r2, =return_to_thread_fp
 	ldr    r3, =#EPSR_T
-	ldr    r0, [r0, #TCB_sp]
+	ldr    r0, [r12, #TCB_sp]
 	ldmfd  r0!, {r4-r11}
 	stmfd  r0!, {r1-r3}
 	sub    r0, #(4 * 5)
-	b      return_to_thread_0
-ALABEL(return_to_thread_no_fp)
-#endif /* TOPPERS_FPU_CONTEXT */
-	ldr    r0, [r0, #TCB_sp]
-	ldmfd  r0!, {r4-r11}
-	ldr    r2, =#EPSR_T
-	stmfd  r0!, {r1, r2}
-	sub    r0, #(4 * 6)
-#ifdef TOPPERS_FPU_CONTEXT
-ALABEL(return_to_thread_0)
-#endif /* TOPPERS_FPU_CONTEXT */
 	msr    psp, r0
-	/* CPU ロック状態へ */
 	ldr    r0, =lock_flag
 	mov    r1, #1
 	str    r1, [r0]
 	dsb /* lock_cpu_dsp() のコメント参照 */
-	/*** 大山 add ***/
-	/*------------------------------*/
-	isb		/*********/
-	/*------------------------------*/
+	isb
+	mrs    r2, control
+	bic    r2, #CONTROL_FPCA
+	msr    control, r2
+	isb
 AALIGN(2)
-#if 0
 	ldr    pc, [pc] /* return_to_idle のコメント参照 */
-	.word  EXC_RETURN
-#elsif 0
-	ldr pc, =#EXC_RETURN
-/*	ldr pc, =my_loop */
-#else
-	ldr lr, =0xFFFFFFFD		/* TESTING PATTERN */
-/*	ldr lr, =0xFFFFFFFD	 */	/* #EXC_RETURN Thread Mode PSP  Right */
-/*	ldr lr, =0xFFFFFFF1	 */	/* #EXC_RETURN Handler Mode PSP  Wrong */
-/*	ldr lr, =0xFFFFFFF9	 */	/* #EXC_RETURN Thread Mode MSP  Wrong */
-	bx  lr
-#endif
-	/*
-	 * この時点でのレジスタ
-	 * lr  : p_runtsk->tskctxb.pc
-	 */
+	.word  EXC_RETURN_NO_FP
+
+ALABEL(return_to_thread_no_fp)
+#endif /* TOPPERS_FPU_CONTEXT */
+	mov    r12, r0
+	ldr    r0, [r12, #TCB_sp]
+	ldr    r1, [r12, #TCB_pc]
+	ldmfd  r0!, {r4-r11}
+	ldr    r2, =#EPSR_T
+	stmfd  r0!, {r1, r2}
+	sub    r0, #(4 * 6)
+	msr    psp, r0
+	ldr    r0, =lock_flag
+	mov    r1, #1
+	str    r1, [r0]
+	dsb /* lock_cpu_dsp() のコメント参照 */
+	isb
+AALIGN(2)
+	ldr    pc, [pc] /* return_to_idle のコメント参照 */
+	.word  EXC_RETURN_NO_FP
+
 #ifdef TOPPERS_FPU_CONTEXT
 ALABEL(return_to_thread_fp)
 	/* 例外リターンにより CONTROL.FPCA がクリアされるが，ここでまたセットされる． */
 	vpop   {s16-s31}
+	/*
+	 *  疑似例外フレームの LR スロットは未使用のため，LR レジスタは信頼できない．
+	 *  TCB に保存した実行再開番地を必ず使う．
+	 */
+	ldr    r0, =p_runtsk
+	ldr    r0, [r0]
+	ldr    lr, [r0, #TCB_pc]
 	bx     lr
 #endif /* TOPPERS_FPU_CONTEXT */
 
